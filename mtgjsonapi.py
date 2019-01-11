@@ -21,5 +21,3 @@ def get_card_data_in_set(set_code, foreign=True):
         for card in set_data:
             del set_data[card]['foreignData']
     return set_data
-
-print('complete')
