@@ -10,7 +10,7 @@ all_sets_data = requests.get('https://mtgjson.com/json/AllSets.json').json()
 def get_card_data_in_set(set_code, foreign=True):
     """
     Return a dictionary of each card in a set, given a set_code (str).
-    
+
     set_code (str): A three character set code representing a set name.
     foreign (bool): Can be set to False to remove foreign language data
         from the output. Defaults to True.
@@ -21,3 +21,5 @@ def get_card_data_in_set(set_code, foreign=True):
         for card in set_data:
             del set_data[card]['foreignData']
     return set_data
+
+print('complete')
