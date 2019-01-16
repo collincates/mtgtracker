@@ -1,0 +1,5 @@
+-r base.txt # includes the base.txt requirements file
+
+coverage==4.5.2
+model-mommy==1.6.0
+six==1.12.0
