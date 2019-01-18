@@ -8,7 +8,7 @@
     <tr>
       <td>
         {% if card.image_url %}<img src="{{ card.image_url }}" alt="Image of card {{ card.name }}">{% endif %}
-        {% if card.variations %} {% for var in card.variations %}<a href="{% url 'card_detail' sdk_id=var %}">{{ 1 }}</a>{% endfor %}{% endif %}
+        {% if card.variations %} {% for var in card.variations %}<a href="{% url 'card_detail' pk=card.id %}">{{ 1 }}</a>{% endfor %}{% endif %}
       </td>
       <td>
         <p><strong>Card Name:</strong>{{ card.name }}</p>
@@ -19,7 +19,7 @@
         {% if card.power and card.toughness %}<p><strong>P/T:</strong> {{ card.power }}/{{ card.toughness }}</p>{% endif %}
         {% if card.set_name %}<p><strong>Expansion:</strong> {{ card.set_name }}</p>{% endif %}
         {% if card.rarity %}<p><strong>Rarity:</strong> {{ card.rarity }}</p>{% endif %}
-        {% if card.printings %}<p><strong>All Sets:</strong> {% for printing in card.printings %} {{ card.printings }} {% endfor %} </p>{% endif %}
+        {% if card.printings %}<p><strong>All Sets:</strong> {% for printing in card.printings %} {{ printing }} {% endfor %} </p>{% endif %}
         {% if card.number %}<p><strong>Card Number:</strong> {{ card.number }}</p>{% endif %}
       </td>
     </tr>
