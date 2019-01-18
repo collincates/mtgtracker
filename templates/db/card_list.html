@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}<title>Card Database</title>{% endblock title %}
+
+{% block content %}
+<table>
+  {% for card in card_list %}
+    <tr>
+      <p><a href="{% url 'card_detail' pk=card.pk %}">{{ card.name }}</a> {{ card.set_name }}</p>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock content %}

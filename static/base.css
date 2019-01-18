@@ -1,0 +1,12 @@
+.cardDetailContainer {
+  width: auto;
+  height: 1000px;
+}
+
+.cardDetail {
+  display: inline-block;
+  position: relative;
+  vertical-align: top;
+  width: auto;
+  height: 500px;
+}

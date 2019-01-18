@@ -10,7 +10,7 @@ class Card(models.Model):
     flavor = models.TextField(max_length=1000, null=True)
     foreign_names = JSONField(null=True)
     hand = models.CharField(max_length=10, null=True)
-    sdk_id = models.CharField(max_length=64) #This is referred to as `id` in the SDK.
+    sdk_id = models.CharField(max_length=64, unique=True) #This is referred to as `id` in the SDK.
     image_url = models.URLField(max_length=200, null=True)
     layout = models.CharField(max_length=15, null=True)
     legalities = JSONField(null=True)

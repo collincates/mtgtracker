@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ card.name }}</h1>
+  <div class="cardDetailContainer">
+  <table class="cardDetail">
+    <tbody>
+    <tr>
+      <td>
+        {% if card.image_url %}<img src="{{ card.image_url }}" alt="Image of card {{ card.name }}">{% endif %}
+        {% if card.variations %} {% for var in card.variations %}<a href="{% url 'card_detail' sdk_id=var %}">{{ 1 }}</a>{% endfor %}{% endif %}
+      </td>
+      <td>
+        <p><strong>Card Name:</strong>{{ card.name }}</p>
+        {% if card.mana_cost %}<p><strong>Mana Cost:</strong> {{ card.mana_cost }}</p>{% endif %}
+        {% if card.cmc %}<p><strong>Converted Mana Cost:</strong>  {{ card.cmc }}</p>{% endif %}
+        {% if card.type %}<p><strong>Types:</strong> {{ card.type }}</p>{% endif %}
+        {% if card.text %}<p><strong>Card Text:</strong> {{ card.text }}</p>{% endif %}
+        {% if card.power and card.toughness %}<p><strong>P/T:</strong> {{ card.power }}/{{ card.toughness }}</p>{% endif %}
+        {% if card.set_name %}<p><strong>Expansion:</strong> {{ card.set_name }}</p>{% endif %}
+        {% if card.rarity %}<p><strong>Rarity:</strong> {{ card.rarity }}</p>{% endif %}
+        {% if card.printings %}<p><strong>All Sets:</strong> {% for printing in card.printings %} {{ card.printings }} {% endfor %} </p>{% endif %}
+        {% if card.number %}<p><strong>Card Number:</strong> {{ card.number }}</p>{% endif %}
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
+{% endblock %}
+
+<!-- <p><strong>Artist:</strong><a href="{% url 'artist_detail' pk=card.pk %}" {{ card.artists }}</a></p> -->
