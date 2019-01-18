@@ -1,0 +1,46 @@
+from django.contrib.postgres.fields import ArrayField, JSONField
+from django.db import models
+
+class Card(models.Model):
+    artist = models.CharField(max_length=100)
+    border = models.CharField(max_length=10)
+    cmc = models.FloatField()
+    color_identity = ArrayField(models.CharField(max_length=1))
+    colors = ArrayField(models.CharField(max_length=5))
+    flavor = models.TextField(max_length=1000)
+    foreign_names = JSONField()
+    hand = models.CharField(max_length=10)
+    sdk_id = models.CharField(max_length=64) #This is referred to as `id` in the SDK.
+    image_url = models.URLField(max_length=200, unique=True)
+    layout = models.CharField(max_length=15)
+    legalities = JSONField()
+    life = models.CharField(max_length=10)
+    loyalty = models.CharField(max_length=10)
+    mana_cost = models.CharField(max_length=100)
+    multiverse_id = models.PositiveIntegerField(unique=True)
+    name = models.CharField(max_length=255)
+    names = ArrayField(models.CharField(max_length=255))
+    number = models.CharField(max_length=10)
+    original_text = models.TextField(max_length=1000)
+    original_type = models.CharField(max_length=255)
+    power = models.CharField(max_length=10)
+    printings = ArrayField(models.CharField(max_length=10))
+    rarity = models.CharField(max_length=50)
+    release_date = models.DateField()
+    rulings = JSONField()
+    set = models.CharField(max_length=10)
+    set_name = models.CharField(max_length=255)
+    source = models.CharField(max_length=255)
+    starter = models.BooleanField()
+    subtypes = ArrayField(models.CharField(max_length=50))
+    supertypes = ArrayField(models.CharField(max_length=20))
+    text = models.TextField(max_length=1000)
+    timeshifted = models.BooleanField()
+    toughness = models.CharField(max_length=10)
+    type = models.CharField(max_length=255)
+    types = ArrayField(models.CharField(max_length=20))
+    variations = ArrayField(models.CharField(max_length=64))
+    watermark = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name

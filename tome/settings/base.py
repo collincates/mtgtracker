@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'accounts.apps.AccountsConfig',
+    'db.apps.DbConfig',
 ]
 
 MIDDLEWARE = [
@@ -54,8 +55,12 @@ WSGI_APPLICATION = 'tome.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['PGDB_NAME'],
+        'USER': os.environ['PGDB_USER'],
+        'PASSWORD': os.environ['PGDB_PASS'],
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
