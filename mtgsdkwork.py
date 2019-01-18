@@ -1,21 +1,58 @@
-import requests
-from mtgsdk import Card
+# Alias these to avoid namespace conflicts
+from mtgsdk import Card as SDKCard
+from db.models import Card as Card
 
-# 44057
 
-grab = 44357    pages 1-444
-grab2 = 44357   pages 1-449
-grab3 = Card.all()
-
-# function/lcass to get all of the cards within the sdk
 class CardGrabber(object):
+    """
+    Instantiate this class to retreive all card objects from
+    MTGSDK and store the card objects in self.cards.
+
+    When calling the method self._change_id_field_name:
+    obj.__dict__['id']    becomes    obj.__dict__['sdk_id']
+    to avoid ValueError in Django's AutoField when creating
+    model objects from the card objects stored in self.cards.
+    """
     def __init__(self):
         self.cards = []
-        self.get_cards()
-    def get_cards(self):
-        for i in range(1, 450):
+        self._get_cards()
+        self._change_id_field_name()
+    def _get_cards(self):
+        """
+        Paginate through MTGSDK and retrieve all Card objects.
+
+        Upper range limit of 500 will need to be changed as
+        more sets/cards are added to the game.
+        """
+        for i in range(1, 500):
             self.cards.extend(Card.where(page=i).all())
             print(f'got page {i}')
+    def _change_id_field_name(self):
+        """
+        MTGSDK provides a UUID for every card in the SDK.
+
+        From the MTGSDK docs:
+
+            'id' - A unique (string) id for this card.
+            It is made up by doing an SHA1 hash
+            of setCode + cardName + cardImageName.
+
+            e.g. '58d469f5-998a-5dfa-93d4-355df6d38799'
+
+        Leaving the key name as ['id'] raises a ValueError with Django's
+        AutoField, which accepts integers and cannot accept string values.
+
+        This method changes the key name from ['id'] to ['sdk_id'],
+        allowing for a Card object's **kwargs to be passed into a
+        Django Model's create() method without error, while retaining
+        the intended functionality of Django's AutoField
+        which acts as an auto-incrementing primary key.
+        """
+        for card in self.cards:
+            card.__dict__['sdk_id'] = card.__dict__.pop('id')
+            print(f'changed {self.cards.index(card)}')
+        print(len(self.cards))
+
 
 class CardModelFactory(object):
     def __init__(self, mtgsdk_card):
