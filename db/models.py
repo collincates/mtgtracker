@@ -1,5 +1,7 @@
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
+from django.urls import reverse
+
 
 class Card(models.Model):
     artist = models.CharField(max_length=100)
@@ -44,3 +46,12 @@ class Card(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('card_detail', args=[str(self.id)])
+
+    def art_variations(self):
+        if self.variations:
+            return Card.objects.filter(
+                sdk_id__in=[self.sdk_id, *self.variations]
+                ).order_by('id')

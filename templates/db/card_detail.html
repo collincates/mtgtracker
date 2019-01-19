@@ -8,19 +8,22 @@
     <tr>
       <td>
         {% if card.image_url %}<img src="{{ card.image_url }}" alt="Image of card {{ card.name }}">{% endif %}
-        {% if card.variations %} {% for var in card.variations %}<a href="{% url 'card_detail' pk=card.id %}">{{ 1 }}</a>{% endfor %}{% endif %}
+        <br>
+        {% if card.variations %}Other Variations:{% for var in card.art_variations %} <a href="{% url 'card_detail' pk=var.id %}">{{ forloop.counter }}</a>{% endfor %}{% endif %}
       </td>
       <td>
-        <p><strong>Card Name:</strong>{{ card.name }}</p>
+        {% if card.name %}<p><strong>Card Name:</strong>{{ card.name }}</p>{% endif %}
         {% if card.mana_cost %}<p><strong>Mana Cost:</strong> {{ card.mana_cost }}</p>{% endif %}
         {% if card.cmc %}<p><strong>Converted Mana Cost:</strong>  {{ card.cmc }}</p>{% endif %}
         {% if card.type %}<p><strong>Types:</strong> {{ card.type }}</p>{% endif %}
         {% if card.text %}<p><strong>Card Text:</strong> {{ card.text }}</p>{% endif %}
+        {% if card.flavor %}<p><strong>Flavor Text:</strong> {{ card.flavor }}</p>{% endif %}
         {% if card.power and card.toughness %}<p><strong>P/T:</strong> {{ card.power }}/{{ card.toughness }}</p>{% endif %}
         {% if card.set_name %}<p><strong>Expansion:</strong> {{ card.set_name }}</p>{% endif %}
         {% if card.rarity %}<p><strong>Rarity:</strong> {{ card.rarity }}</p>{% endif %}
         {% if card.printings %}<p><strong>All Sets:</strong> {% for printing in card.printings %} {{ printing }} {% endfor %} </p>{% endif %}
         {% if card.number %}<p><strong>Card Number:</strong> {{ card.number }}</p>{% endif %}
+        {% if card.artist %}<p><strong>Artist:</strong> {{ card.artist }}</p>{% endif %}
       </td>
     </tr>
     </tbody>
