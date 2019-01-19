@@ -44,6 +44,11 @@ class Card(models.Model):
     variations = ArrayField(models.CharField(max_length=64), null=True)
     watermark = models.CharField(max_length=50, null=True)
 
+    class Meta:
+        ordering = ['id']
+        verbose_name = 'card'
+        verbose_name_plural = 'cards'
+
     def __str__(self):
         return self.name
 
