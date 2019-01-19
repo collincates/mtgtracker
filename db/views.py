@@ -6,8 +6,8 @@ class CardListView(generic.ListView):
     model = Card
     paginate_by = 5000
 
-    def get_queryset(self):
-        return Card.objects.filter(set='FEM')
+    # def get_queryset(self):
+    #     return Card.objects.filter(set='FEM')
 
 class CardDetailView(generic.DetailView):
     model = Card
