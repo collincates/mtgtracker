@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from db.models import Card
-from django.utils.text import slugify
+
 
 class CardListView(generic.ListView):
     model = Card
@@ -21,5 +21,7 @@ class SetListView(generic.ListView):
 
 class CardDetailView(generic.DetailView):
     model = Card
-    # pk_field = 'id'
-    # pk_url_kwarg = 'id'
+    pk_field = 'id'
+    pk_url_kwarg = 'id'
+    # slug_field = 'slug'
+    # slug_url_kwarg = 'slug'

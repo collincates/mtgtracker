@@ -1,7 +1,7 @@
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
 from django.urls import reverse
-
+from django.utils.text import slugify
 
 class Card(models.Model):
     artist = models.CharField(max_length=100)
@@ -53,7 +53,14 @@ class Card(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('card_detail', args=[str(self.id)])
+        return reverse(
+            'card_detail',
+            kwargs={
+                'slug': slugify(self.name),
+                'id': self.id,
+            }
+        )
+        # return reverse('card_detail', args=[str(self.id)])
 
     def art_variations(self):
         if self.variations:

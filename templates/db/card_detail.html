@@ -9,7 +9,7 @@
       <td>
         {% if card.image_url %}<img src="{{ card.image_url }}" alt="Image of card {{ card.name }}">{% endif %}
         <br>
-        {% if card.variations %}Other Variations:{% for var in card.art_variations %} <a href="{% url 'card_detail' pk=var.id %}">{{ forloop.counter }}</a>{% endfor %}{% endif %}
+        {% if card.variations %}Other Variations:{% for var in card.art_variations %} <a href="{% url 'card_detail' id=var.id %}">{{ forloop.counter }}</a>{% endfor %}{% endif %}
       </td>
       <td>
         {% if card.name %}<p><strong>Card Name:</strong>{{ card.name }}</p>{% endif %}
