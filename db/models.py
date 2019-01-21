@@ -1,7 +1,6 @@
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
 
 class Card(models.Model):
     artist = models.CharField(max_length=100)
@@ -12,7 +11,6 @@ class Card(models.Model):
     flavor = models.TextField(max_length=1000, null=True)
     foreign_names = JSONField(null=True)
     hand = models.CharField(max_length=10, null=True)
-    sdk_id = models.CharField(max_length=64, unique=True) #This is referred to as `id` in the SDK.
     image_url = models.URLField(max_length=200, null=True)
     layout = models.CharField(max_length=15, null=True)
     legalities = JSONField(null=True)
@@ -30,8 +28,10 @@ class Card(models.Model):
     rarity = models.CharField(max_length=50)
     release_date = models.DateField(null=True)
     rulings = JSONField(null=True)
+    sdk_id = models.CharField(max_length=64, unique=True) #This is referred to as `id` in the SDK.
     set = models.CharField(max_length=10)
     set_name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=150, null=False, unique=True)
     source = models.CharField(max_length=255, null=True)
     starter = models.BooleanField(null=True)
     subtypes = ArrayField(models.CharField(max_length=50), null=True)
@@ -55,15 +55,9 @@ class Card(models.Model):
     def get_absolute_url(self):
         return reverse(
             'card_detail',
-            kwargs={
-                'slug': slugify(self.name),
-                'id': self.id,
-            }
+            kwargs={'slug': str(self.slug)}
         )
-        # return reverse('card_detail', args=[str(self.id)])
 
     def art_variations(self):
         if self.variations:
-            return Card.objects.filter(
-                sdk_id__in=[self.sdk_id, *self.variations]
-                ).order_by('id')
+            return Card.objects.filter(sdk_id__in=[self.sdk_id, *self.variations]).values_list('slug', flat=True).order_by('id')

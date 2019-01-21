@@ -4,6 +4,6 @@ from . import views
 
 urlpatterns = [
     path('cards/', views.CardListView.as_view(), name='card_list'),
-    path('cards/<slug:slug>', views.SetListView.as_view(), name='set_list'),
-    path('card/<slug:slug>,<int:id>/', views.CardDetailView.as_view(), name='card_detail'),
+    path('cards/<set_name>/', views.SetListView.as_view(), name='set_list'),
+    path('card/<slug:slug>/', views.CardDetailView.as_view(), name='card_detail'),
 ]
