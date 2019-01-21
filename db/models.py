@@ -61,7 +61,7 @@ class Card(models.Model):
     def get_absolute_url(self):
         return reverse(
             'card_detail',
-            kwargs={'slug': str(self.slug)}
+            kwargs={'slug': self.slug}
         )
 
     def art_variations(self):

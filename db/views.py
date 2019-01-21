@@ -11,6 +11,7 @@ class CardListView(generic.ListView):
     def get_queryset(self):
         return Card.objects.filter(set='FEM')
 
+
 class SetListView(generic.ListView):
     model = Card
     slug_field = 'set_name'
