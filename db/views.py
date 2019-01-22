@@ -6,11 +6,10 @@ from django.utils.text import slugify
 
 class CardListView(generic.ListView):
     model = Card
-    paginate_by = 5000
+    paginate_by = 100
 
-    def get_queryset(self):
-        return Card.objects.filter(set='FEM')
-
+    # def get_queryset(self):
+    #     return Card.objects.filter(set='LEA')
 
 class SetListView(generic.ListView):
     model = Card
@@ -19,7 +18,6 @@ class SetListView(generic.ListView):
 
     def get_queryset(self, set_name):
         return Card.objects.filter(set_name=set_name)
-
 
 class CardDetailView(generic.DetailView):
     model = Card
