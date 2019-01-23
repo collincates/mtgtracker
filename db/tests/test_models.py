@@ -30,7 +30,7 @@ class CardModelTest(TestCase):
 
     def test_card_string_representation(self):
         card = Card.objects.get(id=1)
-        self.assertEqual(str(card), card.name)
+        self.assertEqual(card.__str__(), card.name)
 
     def test_card_override_save_with_slug(self):
         # Card class comes with a blank slug upon instantiation by default.
@@ -43,11 +43,13 @@ class CardModelTest(TestCase):
 
     def test_card_get_absolute_url(self):
         card = Card.objects.get(id=1)
-        self.assertEqual(card.get_absolute_url(), '/db/card/1-card-1')
+        card_abs_url = card.get_absolute_url()
+        self.assertEqual(card_abs_url, '/db/card/1-card-1')
 
     def test_card_art_variations(self):
         card3 = Card.objects.get(id=3)
+        art_var = card3.art_variations()
         self.assertQuerysetEqual(
-            card3.art_variations(),
+            art_var,
             map(repr, ['1-card-1', '2-card-2', '3-card-3'])
         )
