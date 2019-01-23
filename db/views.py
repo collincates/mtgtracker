@@ -22,15 +22,12 @@ class SetListView(generic.ListView):
 class CardDetailView(generic.DetailView):
     model = Card
 
-    def get_object(self, **kwargs):
-        # super(CardDetailView, self).get_object()
-        queryset = self.get_queryset()
-        return queryset.get(
+    def get_object(self, queryset=None, **kwargs):
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        return get_object_or_404(
+            Card,
             slug=self.kwargs['card_slug'],
-            set_name=self.kwargs['set_slug']
-        )
-        # return get_object_or_404(
-        #     Card,
-        #     card_slug=self.kwargs['card_slug'],
-        #     set_slug=self.kwargs['set_slug'],
-        #     )
+            # set_name=self.kwargs['set_slug'],
+            )
