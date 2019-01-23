@@ -12,8 +12,10 @@ class CardListView(generic.ListView):
     #     return Card.objects.filter(set='LEA')
 
 class SetListView(generic.ListView):
+    allow_empty = False
     model = Card
     paginate_by = 100
+    template_name = 'db/set_list.html'
 
     def get_queryset(self):
         return Card.objects.filter(set_name=self.kwargs['set_name'])

@@ -5,6 +5,65 @@ from django.utils.text import slugify
 from db.models import Card
 
 
+class SetListViewTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        number_of_cards = 302
+
+        for card_id in range(number_of_cards):
+            Card.objects.create(
+                name=f'Card {card_id}',
+                set_name='Test Set Name',
+                id=f'{card_id}',
+                sdk_id=f'{card_id}',
+            )
+    #
+    # def test_set_list_view_url_exists_at_desired_location(self):
+    #     response = self.client.get('/db/Test Set Name/')
+    #     self.assertEqual(response.status_code, 200)
+
+
+    def test_set_list_view_url_accessible_by_name(self):
+        card = Card.objects.get(id=1)
+        response = self.client.get(reverse('set_list', args=[card.set_name]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_set_list_view_uses_correct_template(self):
+        card = Card.objects.get(id=1)
+        response = self.client.get(reverse('set_list', args=[card.set_name]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'db/set_list.html')
+
+    def test_set_list_view_empty_database(self):
+        Card.objects.all().delete()
+        with self.assertRaises(NameError):
+            response = self.client.get(reverse('set_list', args=[card.set_name]))
+
+    def test_set_list_view_with_empty_queryset(self):
+        queryset = None
+        with self.assertRaises(NameError):
+            response = self.client.get(reverse('set_list', args=[card.set_name]))
+
+    def test_set_list_view_pagination_is_one_hundred(self):
+        card = Card.objects.all()
+        response = self.client.get(reverse('set_list', args=[card[0].set_name]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertTrue(len(response.context['card_list']) == 100)
+
+    def test_set_list_view_pagination_lists_all_cards(self):
+        card = Card.objects.all()
+        response = self.client.get(reverse('set_list', args=[card[0].set_name]))
+
+        response = self.client.get(reverse('set_list', args=[card[0].set_name]) + '?page=4')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertTrue(len(response.context['card_list']) == 2)
+
+
 class CardListViewTest(TestCase):
 
     @classmethod

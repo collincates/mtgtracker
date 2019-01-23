@@ -1,13 +1,19 @@
 {% extends 'base.html' %}
 
-{% block title %}<title>Card Database</title>{% endblock title %}
+{% block title %}<title>Set List</title>{% endblock title %}
 
 {% block content %}
 <table>
-  {% for card in card_list %}
+  {% if card_list %}
+    {% for card in card_list %}
+      <tr>
+        <p><a href="{% url 'card_detail' card_slug=card.slug %}">{{ card.name }}</a> {{ card.set_name }}</p>
+      </tr>
+    {% endfor %}
+  {% else %}
     <tr>
-      <p><a href="{% url 'card_detail' pk=card.id %}">{{ card.name }}</a> {{ card.set_name }}</p>
+      <p>No cards are available with these options.</p>
     </tr>
-  {% endfor %}
+  {% endif %}
 </table>
 {% endblock content %}
