@@ -61,7 +61,10 @@ class Card(models.Model):
     def get_absolute_url(self):
         return reverse(
             'card_detail',
-            kwargs={'slug': self.slug}
+            kwargs={
+                'set_slug': slugify(self.set_name),
+                'card_slug': self.slug,
+            }
         )
 
     def art_variations(self):

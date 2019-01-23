@@ -21,5 +21,16 @@ class SetListView(generic.ListView):
 
 class CardDetailView(generic.DetailView):
     model = Card
-    slug_field = 'slug'
-    slug_url_kwarg = 'slug'
+
+    def get_object(self, **kwargs):
+        # super(CardDetailView, self).get_object()
+        queryset = self.get_queryset()
+        return queryset.get(
+            slug=self.kwargs['card_slug'],
+            set_name=self.kwargs['set_slug']
+        )
+        # return get_object_or_404(
+        #     Card,
+        #     card_slug=self.kwargs['card_slug'],
+        #     set_slug=self.kwargs['set_slug'],
+        #     )
