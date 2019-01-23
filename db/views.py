@@ -21,7 +21,5 @@ class SetListView(generic.ListView):
 
 class CardDetailView(generic.DetailView):
     model = Card
-    # pk_field = 'id'
-    # pk_url_kwarg = 'id'
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
