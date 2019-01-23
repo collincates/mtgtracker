@@ -43,7 +43,7 @@ class CardModelTest(TestCase):
 
     def test_card_get_absolute_url(self):
         card = Card.objects.get(id=1)
-        self.assertEqual(card.get_absolute_url(), '/db/a-test-set/1-card-1')
+        self.assertEqual(card.get_absolute_url(), '/db/card/1-card-1')
 
     def test_card_art_variations(self):
         card3 = Card.objects.get(id=3)

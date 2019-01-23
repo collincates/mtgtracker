@@ -6,7 +6,7 @@
 <table>
   {% for card in card_list %}
     <tr>
-      <p><a href="{% url 'card_detail' slug=card.slug %}">{{ card.name }}</a> {{ card.set_name }}</p>
+      <p><a href="{% url 'card_detail' card_slug=card.slug %}">{{ card.name }}</a> {{ card.set_name }}</p>
     </tr>
   {% empty %}
     <tr>

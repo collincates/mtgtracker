@@ -13,11 +13,11 @@ class CardListView(generic.ListView):
 
 class SetListView(generic.ListView):
     model = Card
-    slug_field = 'set_name'
-    slug_url_kwarg = 'set_name'
+    paginate_by = 100
 
-    def get_queryset(self, set_name):
-        return Card.objects.filter(set_name=set_name)
+    def get_queryset(self):
+        return Card.objects.filter(set_name=self.kwargs['set_name'])
+
 
 class CardDetailView(generic.DetailView):
     model = Card

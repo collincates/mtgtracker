@@ -82,7 +82,7 @@ class CardDetailViewTest(TestCase):
         response = self.client.get(reverse(
             'card_detail',
             kwargs={
-                'set_slug': slugify(card.set_name),
+                # 'set_slug': slugify(card.set_name),
                 'card_slug': card.slug,
             }
         ))

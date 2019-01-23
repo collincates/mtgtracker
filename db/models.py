@@ -47,7 +47,7 @@ class Card(models.Model):
     watermark = models.CharField(max_length=50, null=True)
 
     class Meta:
-        ordering = ['id']
+        ordering = ['name']
         verbose_name = 'card'
         verbose_name_plural = 'cards'
 
