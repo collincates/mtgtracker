@@ -94,7 +94,7 @@ class Deck(models.Model):
     name = models.CharField(max_length=255)
     cards = models.ManyToManyField(
         Card,
-        through='DeckCards',
+        # through='DeckCards',
         # through_fields=('deck', 'card'),
         related_name='decks'
     )
@@ -106,7 +106,6 @@ class Deck(models.Model):
         return self.name
 
 
-class DeckCards(models.Model):
-    deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
-    card = models.ForeignKey(Card, on_delete=models.CASCADE)
-    count = models.PositiveIntegerField(validators=[MaxValueValidator(4)])
+# class DeckCards(models.Model):
+#     deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
+#     card = models.ForeignKey(Card, on_delete=models.CASCADE)

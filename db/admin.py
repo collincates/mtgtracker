@@ -34,4 +34,7 @@ class CollectionModelAdmin(admin.ModelAdmin):
 
 @admin.register(Deck)
 class DeckModelAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'show_cards')
+
+    def show_cards(self, obj):
+        return '/n'.join([card.name for card in obj.cards.all()])

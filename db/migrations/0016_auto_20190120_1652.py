@@ -17,5 +17,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(slugify_title_id),
+        migrations.RunPython(slugify_title_id,
+            reverse_code=migrations.RunPython.noop),
     ]
