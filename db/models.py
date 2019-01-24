@@ -1,6 +1,7 @@
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
 from django.conf import settings
+from django.core.validators import MaxValueValidator
 from django.urls import reverse
 from django.utils.text import slugify
 
@@ -9,10 +10,10 @@ class Card(models.Model):
     artist = models.CharField(max_length=100)
     border = models.CharField(max_length=10, null=True)
     cmc = models.FloatField(null=True)
-    collection = models.ForeignKey('Collection', on_delete=models.SET_NULL, null=True)
+    # collection = models.ManyToManyField('Collection', null=True, related_name='cards', through='CollectionCards')
     color_identity = ArrayField(models.CharField(max_length=1, null=True), null=True)
     colors = ArrayField(models.CharField(max_length=5, null=True), null=True)
-    deck = models.ForeignKey('Deck', on_delete=models.SET_NULL, null=True)
+    # deck = models.ManyToManyField('Deck', null=True, related_name='cards', through='DeckCards')
     flavor = models.TextField(max_length=1000, null=True)
     foreign_names = JSONField(null=True)
     hand = models.CharField(max_length=10, null=True)
@@ -75,17 +76,37 @@ class Collection(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
+    decks = models.ManyToManyField(
+        'Deck',
+        related_name='collections'
+    )
 
     def __str__(self):
         return self.name
 
 
+# class CollectionCards(models.Model):
+#     collection = models.ForeignKey(Collection, on_delete=models.)
+#     card = models.ForeignKey(Card, on_delete=models.SET_NULL)
+
+
 class Deck(models.Model):
     name = models.CharField(max_length=255)
-    collection = models.ManyToManyField(Collection)
+    cards = models.ManyToManyField(
+        Card,
+        through='DeckCards',
+        # through_fields=('deck', 'card'),
+        related_name='decks'
+    )
 
     class Meta:
         ordering = ('name',)
 
     def __str__(self):
         return self.name
+
+
+class DeckCards(models.Model):
+    deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    count = models.PositiveIntegerField(validators=[MaxValueValidator(4)])
