@@ -1,5 +1,6 @@
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
+from django.conf import settings
 from django.urls import reverse
 from django.utils.text import slugify
 
@@ -8,8 +9,10 @@ class Card(models.Model):
     artist = models.CharField(max_length=100)
     border = models.CharField(max_length=10, null=True)
     cmc = models.FloatField(null=True)
+    collection = models.ForeignKey('Collection', on_delete=models.SET_NULL, null=True)
     color_identity = ArrayField(models.CharField(max_length=1, null=True), null=True)
     colors = ArrayField(models.CharField(max_length=5, null=True), null=True)
+    deck = models.ForeignKey('Deck', on_delete=models.SET_NULL, null=True)
     flavor = models.TextField(max_length=1000, null=True)
     foreign_names = JSONField(null=True)
     hand = models.CharField(max_length=10, null=True)
@@ -64,3 +67,25 @@ class Card(models.Model):
     def art_variations(self):
         if self.variations:
             return Card.objects.filter(sdk_id__in=[self.sdk_id, *self.variations]).values_list('slug', flat=True).order_by('id')
+
+
+class Collection(models.Model):
+    name = models.CharField(max_length=255)
+    owner = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Deck(models.Model):
+    name = models.CharField(max_length=255)
+    collection = models.ManyToManyField(Collection)
+
+    class Meta:
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
