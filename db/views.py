@@ -1,15 +1,30 @@
+import operator
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from db.models import Card, Collection
 from django.utils.text import slugify
-
+from functools import reduce
+# from itertools import filter
 
 class CardListView(generic.ListView):
     model = Card
     paginate_by = 100
+    template_name = 'db/card_list.html'
 
-    # def get_queryset(self):
-    #     return Card.objects.filter(set='LEA')
+
+    def get_queryset(self):
+        result=super(CardListView, self).get_queryset()
+
+        query = self.request.GET.get('query')
+        if query:
+            query_list = query.split()
+            result = result.filter(
+                reduce(operator.and_,
+                    (Q(name__icontains=q) for q in query_list))
+            )
+
+        return result
 
 class SetListView(generic.ListView):
     allow_empty = False
