@@ -81,18 +81,22 @@ class Collection(models.Model):
         related_name='collections'
     )
 
-    # cards = models.ManyToManyField(
-    #     'Card',
-    #     related_name='collections'
-    # )
+    cards = models.ManyToManyField(
+        'Card',
+        related_name='collections'
+    )
 
     def __str__(self):
         return self.name
 
 
-# class CollectionCards(models.Model):
-#     collection = models.ForeignKey(Collection, on_delete=models.)
-#     card = models.ForeignKey(Card, on_delete=models.SET_NULL)
+class CollectionCards(models.Model):
+    collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    count = models.PositiveSmallIntegerField()
+        #What about land cards?
+    class Meta:
+        unique_together = ('collection', 'card',)
 
 
 class Deck(models.Model):
