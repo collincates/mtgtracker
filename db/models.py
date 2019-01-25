@@ -114,6 +114,6 @@ class DeckCards(models.Model):
     deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
     card = models.ForeignKey(Card, on_delete=models.CASCADE)
     count = models.PositiveSmallIntegerField(validators=[MaxValueValidator(4),])
-
+        #What about land cards?
     class Meta:
         unique_together = ('deck', 'card',)
