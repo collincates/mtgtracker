@@ -37,7 +37,7 @@ class Card(models.Model):
     sdk_id = models.CharField(max_length=64, unique=True) #This is referred to as `id` in the SDK.
     set = models.CharField(max_length=10)
     set_name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=150, null=False, unique=True)
+    slug = models.SlugField(max_length=150, null=False, unique=False)
     source = models.CharField(max_length=255, null=True)
     starter = models.BooleanField(null=True)
     subtypes = ArrayField(models.CharField(max_length=50), null=True)
@@ -81,6 +81,11 @@ class Collection(models.Model):
         related_name='collections'
     )
 
+    # cards = models.ManyToManyField(
+    #     'Card',
+    #     related_name='collections'
+    # )
+
     def __str__(self):
         return self.name
 
@@ -94,7 +99,7 @@ class Deck(models.Model):
     name = models.CharField(max_length=255)
     cards = models.ManyToManyField(
         Card,
-        # through='DeckCards',
+        through='DeckCards',
         # through_fields=('deck', 'card'),
         related_name='decks'
     )
@@ -106,6 +111,7 @@ class Deck(models.Model):
         return self.name
 
 
-# class DeckCards(models.Model):
-#     deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
-#     card = models.ForeignKey(Card, on_delete=models.CASCADE)
+class DeckCards(models.Model):
+    deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    count = models.PositiveSmallIntegerField(validators=[MaxValueValidator(4),])
