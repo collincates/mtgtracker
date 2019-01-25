@@ -88,7 +88,12 @@ class Collection(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('collection_detail', kwargs={'pk': self.pk})
+        return reverse('collection_detail',
+            kwargs={
+                'collection_name': self.name,
+                'user_name': self.owner.username
+            }
+        )
 
 
 class CollectionCards(models.Model):

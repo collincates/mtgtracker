@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
-from db.models import Card
+from db.models import Card, Collection
 from django.utils.text import slugify
 
 
@@ -33,3 +33,20 @@ class CardDetailView(generic.DetailView):
             slug=self.kwargs['card_slug'],
             # set_name=self.kwargs['set_slug'],
             )
+
+class CollectionDetailView(generic.DetailView):
+    model = Collection
+
+    def get_object(self, queryset=None, **kwargs):
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        return get_object_or_404(
+            Collection,
+            # user_name=self.kwargs['user_name'],
+            name=self.kwargs['collection_name'],
+            # id=self.kwargs['id']
+            )
+
+    # def get_queryset(self):
+    #     return Collection.objects.get(owner=self.kwargs['user_name'])

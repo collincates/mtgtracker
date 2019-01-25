@@ -97,4 +97,4 @@ class CollectionModelTest(TestCase):
         user = User.objects.get(username='testuser1')
         collection = Collection.objects.get(name='testcollection1')
         collection_abs_url = collection.get_absolute_url()
-        self.assertEqual(collection_abs_url, '/testuser1/collection/')
+        self.assertEqual(collection_abs_url, '/db/testuser1/testcollection1/')
