@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
 
-from db.models import Card
+from db.models import Card, Collection, Deck
 
 
 class SetListViewTest(TestCase):
@@ -168,3 +168,24 @@ class CardDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, card.name)
         self.assertEqual(response.context['card'].sdk_id, 'test sdk_id')
+
+
+class CollectionDetailViewTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='12345678')
+
+        self.login = self.client.login(
+            username=self.user.username,
+            password=self.user.password
+        )
+
+        collection = Collection.objects.create(
+            name='testcollection',
+            owner=self.user
+            )
+
+    def test_collection_detail_view_url_exists_at_desired_location(self):
+        collection = Collection.objects.get(name='testcollection')
+        response = self.client.get(collection.get_absolute_url())
+        self.assertEqual(response.status_code, 200)

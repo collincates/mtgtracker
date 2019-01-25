@@ -51,7 +51,7 @@ class Card(models.Model):
     watermark = models.CharField(max_length=50, null=True)
 
     class Meta:
-        ordering = ['name']
+        ordering = ('name',)
         verbose_name = 'card'
         verbose_name_plural = 'cards'
 
@@ -76,18 +76,19 @@ class Collection(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
-    decks = models.ManyToManyField(
-        'Deck',
-        related_name='collections'
-    )
+    decks = models.ManyToManyField('Deck', related_name='collections')
+    cards = models.ManyToManyField('Card', related_name='collections')
 
-    cards = models.ManyToManyField(
-        'Card',
-        related_name='collections'
-    )
+    class Meta:
+        ordering = ('name',)
+        verbose_name = 'collection'
+        verbose_name_plural = 'collections'
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('collection_detail', kwargs={'pk': self.pk})
 
 
 class CollectionCards(models.Model):
@@ -109,6 +110,8 @@ class Deck(models.Model):
 
     class Meta:
         ordering = ('name',)
+        verbose_name = 'deck'
+        verbose_name_plural = 'decks'
 
     def __str__(self):
         return self.name

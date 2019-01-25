@@ -5,7 +5,7 @@ from db.models import Card as Card
 
 class CardGrabber(object):
     """
-    Instantiate this class to retreive all card objects from
+    Instantiate this class to retrieve all card objects from
     MTGSDK and store the card objects in self.cards.
 
     When calling the method self._change_id_field_name:
