@@ -100,7 +100,6 @@ class Deck(models.Model):
     cards = models.ManyToManyField(
         Card,
         through='DeckCards',
-        # through_fields=('deck', 'card'),
         related_name='decks'
     )
 
@@ -115,3 +114,6 @@ class DeckCards(models.Model):
     deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
     card = models.ForeignKey(Card, on_delete=models.CASCADE)
     count = models.PositiveSmallIntegerField(validators=[MaxValueValidator(4),])
+
+    class Meta:
+        unique_together = ('deck', 'card',)
