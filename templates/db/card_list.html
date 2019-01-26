@@ -10,9 +10,9 @@
   <input class="searchfield" id="searchbox" name="query" type="text" placeholder="Search for a card">
 </form>
 
-<table>
+<table class="cardItemTable">
   {% for card in card_list %}
-    <tr class="carditem">
+    <tr class="cardItem">
       <td class="leftcolumn">
         <a href="{% url 'card_detail' card_slug=card.slug %}">
           <img src="{{ card.image_url }}" width="95" height="132">

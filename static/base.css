@@ -19,3 +19,12 @@
   width: auto;
   height: 500px;
 }
+
+.cardItemTable {
+  width: 200px
+  position: relative;
+}
+
+.cardItem {
+
+}
