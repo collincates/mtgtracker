@@ -5,14 +5,21 @@
 {% block content %}
 <form id="searchform" action="{% url 'card_list' %}" method="GET" accept-charset="utf-8">
   <button class="searchbutton" type="submit">
-    <i class="fa fa-search"></i>
+    <i class="fa fa-search" aria-hidden="true">GO</i>
   </button>
   <input class="searchfield" id="searchbox" name="query" type="text" placeholder="Search for a card">
 </form>
 
-<table class="cardItemTable">
+<table class="cardItemTable table-striped table-hover">
   {% for card in card_list %}
     <tr class="cardItem">
+      <td class="addremovecolumn">
+        <p><input class="addbutton" type="submit" value="+"></p>
+        <p><input class="collectioncardqty" type="number" value="Hi"></p>
+        <p><input class="removebutton" type="submit" value="-"></p>
+
+
+      </td>
       <td class="leftcolumn">
         <a href="{% url 'card_detail' card_slug=card.slug %}">
           <img src="{{ card.image_url }}" width="95" height="132">
