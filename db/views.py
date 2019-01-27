@@ -2,10 +2,14 @@ import operator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
-from db.models import Card, Collection
+from django.views.decorators.http import require_POST
 from django.utils.text import slugify
+
 from functools import reduce
 # from itertools import filter
+
+from db.models import Card, Collection
+from db.forms import CollectionAddCardForm
 
 class CardListView(generic.ListView):
     model = Card
@@ -65,3 +69,19 @@ class CollectionDetailView(generic.DetailView):
 
     # def get_queryset(self):
     #     return Collection.objects.get(owner=self.kwargs['user_name'])
+
+@require_POST
+def collection_add(request, card_id):
+    collection = Collection(request)
+    card = get_object_or_404(Card, id=card_id)
+    form = CollectionAddCardForm(request.POST)
+    if form.is_valid():
+        cd = form.cleaned_data
+        collection.add(card=card)
+    return redirect('collection_detail')
+
+def collection_remove(request, card_id):
+    collection = Collection(request)
+    card = get_object_or_404(Card, id=card_id)
+    collection.remove(card)
+    return redirect('collection_detail')
