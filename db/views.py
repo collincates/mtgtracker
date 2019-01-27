@@ -81,7 +81,13 @@ def collection_add(request, card_id):
     return redirect('collection_detail')
 
 def collection_remove(request, card_id):
-    collection = Collection(request)
+    collection = Collection.objects.get(name=request.kwargs['collection_name'])
     card = get_object_or_404(Card, id=card_id)
     collection.cards.remove(card)
-    return redirect('collection_detail', name=collection.name)
+    return redirect(
+        'collection_detail',
+        # kwargs={
+        #     'collection_name': collection.name,
+        #     'user_name': request.user.username,
+        # }
+    )
