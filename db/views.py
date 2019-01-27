@@ -83,5 +83,5 @@ def collection_add(request, card_id):
 def collection_remove(request, card_id):
     collection = Collection(request)
     card = get_object_or_404(Card, id=card_id)
-    collection.remove(card)
-    return redirect('collection_detail')
+    collection.cards.remove(card)
+    return redirect('collection_detail', name=collection.name)
