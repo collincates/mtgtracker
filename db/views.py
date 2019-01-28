@@ -1,9 +1,11 @@
 import operator
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils.text import slugify
 from django.views import generic
 from django.views.decorators.http import require_POST
-from django.utils.text import slugify
 
 from functools import reduce
 # from itertools import filter
@@ -53,6 +55,7 @@ class CardDetailView(generic.DetailView):
             # set_name=self.kwargs['set_slug'],
             )
 
+# @login_required
 class CollectionDetailView(generic.DetailView):
     model = Collection
 
@@ -62,32 +65,55 @@ class CollectionDetailView(generic.DetailView):
 
         return get_object_or_404(
             Collection,
-            # user_name=self.kwargs['user_name'],
+            ### THIS CAUSES remove/card_slug to aooear
+            # the same as collection_detail when uncommented
+            #owner=self.request.user,
             name=self.kwargs['collection_name'],
             # id=self.kwargs['id']
             )
 
-    # def get_queryset(self):
-    #     return Collection.objects.get(owner=self.kwargs['user_name'])
+    # def get_context_data(self, **kwargs):
+    #     context = super(CollectionDetailView, self).get_context_data(**kwargs)
+    #     context['collection_name'] = self.object.name
+    #     context['user_name'] = self.request.user.username
+    #     return context
 
+
+@login_required
 @require_POST
 def collection_add(request, card_id):
-    collection = Collection(request)
-    card = get_object_or_404(Card, id=card_id)
-    form = CollectionAddCardForm(request.POST)
-    if form.is_valid():
-        cd = form.cleaned_data
-        collection.add(card=card)
-    return redirect('collection_detail')
+    pass
+    # # collection = Collection(request)
+    # card = get_object_or_404(Card, id=card_id)
+    # form = CollectionAddCardForm(request.POST)
+    # if form.is_valid():
+    #     cd = form.cleaned_data
+    #     collection.add(card=card)
+    # return redirect('collection_detail')
 
-def collection_remove(request, card_id):
-    collection = Collection.objects.get(name=request.kwargs['collection_name'])
-    card = get_object_or_404(Card, id=card_id)
+@login_required
+def collection_remove(request, card_slug):
+    card = get_object_or_404(Card, slug=card_slug)
+    # collection, created = Collection.objects.get_or_create(owner=self.request.user.id)
+    collection = Collection.objects.get(owner=1)
     collection.cards.remove(card)
-    return redirect(
-        'collection_detail',
-        # kwargs={
-        #     'collection_name': collection.name,
-        #     'user_name': request.user.username,
-        # }
-    )
+    # card_qty = CollectionCards.objects.get(
+    #     collection=self.request.context['collection'],
+    #     card=card
+    # )
+    #
+    # if card_qty.count > 0:
+    #     card_qty.count -= 1
+    #     card_qty.save()
+    # else:
+    #     card_qty.
+
+    # return redirect(reverse(
+    #     'collection_detail',
+    #     kwargs={
+    #         'collection_name': self.collection.name,
+    #         'user_name': self.request.user.username,
+    #     }
+    # ))
+
+    return render(request, 'card_list')
