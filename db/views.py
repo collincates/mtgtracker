@@ -11,8 +11,8 @@ from django.views.decorators.http import require_POST
 from functools import reduce
 # from itertools import filter
 
-from db.models import Card, Collection
-from db.forms import CollectionAddCardForm
+from db.models import Card, Collection, CollectionCards
+from db.forms import CollectionCardAddForm
 
 class CardListView(generic.ListView):
     model = Card
@@ -56,6 +56,23 @@ class CardDetailView(generic.DetailView):
             # set_name=self.kwargs['set_slug'],
             )
 
+@login_required
+def collection_view(request, **kwargs):
+    user_collection = Collection.objects.get(owner=request.user)
+    collectioncards = CollectionCards.objects.filter(collection__owner=user_collection.owner)
+    # form = CollectionCardAddForm(request.POST)
+    # for card in collectioncards.all():
+    #     card['qty_update_form'] = CollectionAddCardForm(initial={'quantity': card['quantity'], 'update': True})
+    context = {
+        'collection': user_collection,
+        'collection_name': user_collection.name,
+        'user_name': user_collection.owner.username,
+        'collectioncards': collectioncards,
+    }
+
+    return render(request, 'db/collection_detail.html', context=context)
+
+"""
 # @login_required
 class CollectionDetailView(generic.DetailView):
     model = Collection
@@ -90,26 +107,37 @@ class CollectionDetailView(generic.DetailView):
     #     context['collection_name'] = self.object.name
     #     context['user_name'] = self.request.user.username
     #     return context
-
-
-@login_required
-@require_POST
-def collection_add(request, card_id):
-    pass
-    # # collection = Collection(request)
-    # card = get_object_or_404(Card, id=card_id)
-    # form = CollectionAddCardForm(request.POST)
-    # if form.is_valid():
-    #     cd = form.cleaned_data
-    #     collection.add(card=card)
-    # return redirect('collection_detail')
+"""
 
 @login_required
-def collection_remove(request, card_slug):
+# @require_POST
+def add_to_collection(request, card_slug):
+    collection = Collection.objects.get(owner=request.user)
+    card = get_object_or_404(Card, card_slug=card_slug)
+    # logic to add more quantities
+    if request.method == 'POST':
+        inst = CollectionCards.objects.get(collection_id=collection.id, card_id=card.id)
+        form = CollectionCardAddForm(request.POST, instance=inst)
+        if form.is_valid():
+            collcard = form.save(commit=False)
+            collcard.count = 1
+            collcard.save()
+            return redirect(reverse('collection_detail'))
+
+    else:
+        form = CollectionCardAddForm()
+
+    messages.info(request, 'Card added to collection')
+    return redirect(reverse('collection_detail'))
+
+@login_required
+def remove_from_collection(request, card_slug):
+    collection = Collection.objects.get(owner=self.request.user)
     card = get_object_or_404(Card, slug=card_slug)
-    # collection, created = Collection.objects.get_or_create(owner=self.request.user.id)
-    collection = Collection.objects.get(owner=1)
     collection.cards.remove(card)
+    messages.info(request, 'Card has been removed from collection')
+    return redirect(reverse('collection_detail'))
+
     # card_qty = CollectionCards.objects.get(
     #     collection=self.request.context['collection'],
     #     card=card
@@ -128,5 +156,3 @@ def collection_remove(request, card_slug):
     #         'user_name': self.request.user.username,
     #     }
     # ))
-
-    return render(request, 'card_list')

@@ -77,7 +77,7 @@ class Collection(models.Model):
         on_delete=models.CASCADE
     )
     decks = models.ManyToManyField('Deck', related_name='collections')
-    cards = models.ManyToManyField('Card', related_name='collections')
+    cards = models.ManyToManyField('Card', through='CollectionCards', related_name='collections')
 
     class Meta:
         ordering = ('name',)

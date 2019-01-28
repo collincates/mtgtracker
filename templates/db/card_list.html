@@ -14,11 +14,9 @@
   {% for card in card_list %}
     <tr class="cardItem">
       <td class="addremovecolumn">
-        <p><input class="addbutton" type="submit" value="+"></p>
+        <a href="{% url 'collection_add' card.slug %}" class="btn btn-warning">Add</a>
         <p><input class="collectioncardqty" type="number" value="Hi"></p>
-        <p><input class="removebutton" type="submit" value="-"></p>
-
-
+        <a href="{% url 'collection_remove' card.slug %}" class="btn btn-warning">Remove</a>
       </td>
       <td class="leftcolumn">
         <a href="{% url 'card_detail' card_slug=card.slug %}">
