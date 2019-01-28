@@ -1,6 +1,7 @@
 import operator
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.text import slugify
@@ -72,6 +73,18 @@ class CollectionDetailView(generic.DetailView):
             # id=self.kwargs['id']
             )
 
+    if request.POST:
+        card_slug = request.POST.get('card_slug')
+        card = Card.objects.get(slug=card_slug)
+        # Make add/remove into if/then test
+        if card not in collection.cards:
+            CollectionCards.objects.create(
+                collection=collection,
+                card=card,
+                count=1
+            )
+        else:
+            collection.cards.add()
     # def get_context_data(self, **kwargs):
     #     context = super(CollectionDetailView, self).get_context_data(**kwargs)
     #     context['collection_name'] = self.object.name
