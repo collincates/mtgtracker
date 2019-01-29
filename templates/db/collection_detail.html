@@ -31,12 +31,15 @@
             </td>
             <td>
               {{ card.name }}
-              {{ card.count }}
             </td>
             <td>
-              <form action="{% url 'collection_add' card.slug %}" method="POST">
+              {% for collcard in card.collectioncards_set.all %}
+                {{ collcard.count }}
+              {% endfor %}
+
+              <form action="{% url 'collection_add' card.id %}" method="POST">
                 {% csrf_token %}
-                {{ form.as_p }}
+                  <p>{{ form.count }}</p>
                 <input type="submit" value="Update" class="btn btn-info">
               </form>
             </td>

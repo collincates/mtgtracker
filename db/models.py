@@ -74,7 +74,8 @@ class Collection(models.Model):
     name = models.CharField(max_length=255)
     owner = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='collection'
     )
     decks = models.ManyToManyField('Deck', related_name='collections')
     cards = models.ManyToManyField('Card', through='CollectionCards', related_name='collections')
@@ -97,8 +98,18 @@ class Collection(models.Model):
 
 
 class CollectionCards(models.Model):
-    collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
-    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    collection = models.ForeignKey(
+        Collection,
+        on_delete=models.CASCADE,
+        related_name='collectioncards'
+    )
+
+    card = models.ForeignKey(
+        Card,
+        on_delete=models.CASCADE,
+        related_name='collectioncards'
+    )
+
     count = models.PositiveSmallIntegerField()
         #What about land cards?
     class Meta:
@@ -123,8 +134,18 @@ class Deck(models.Model):
 
 
 class DeckCards(models.Model):
-    deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
-    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    deck = models.ForeignKey(
+        Deck,
+        on_delete=models.CASCADE,
+        related_name='deckcards'
+    )
+
+    card = models.ForeignKey(
+        Card,
+        on_delete=models.CASCADE,
+        related_name='deckcards'
+    )
+
     count = models.PositiveSmallIntegerField(validators=[MaxValueValidator(4),])
         #What about land cards?
     class Meta:
