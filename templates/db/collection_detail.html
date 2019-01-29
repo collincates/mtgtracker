@@ -18,7 +18,6 @@
           <th>Image</th>
           <th>Card</th>
           <th>Quantity</th>
-          <th>Remove</th>
         </tr>
       </thead>
       <tbody>
@@ -35,7 +34,7 @@
             <td>
               <a href="{% url 'collection_remove' card.id %}" class="btn btn-primary">-</a>
               <span>{{ card.collectioncards.all.first.count }}</span>
-              <a href="{% url 'collection_add' card.id %}" class="btn btn-primary">+</a>
+              <a href="{% url 'collection_add' card_id=card.id %}" class="btn btn-primary">+</a>
             </td>
           </tr>
         {% endfor %}

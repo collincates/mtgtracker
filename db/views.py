@@ -1,18 +1,18 @@
 import operator
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.text import slugify
 from django.views import generic
-from django.views.decorators.http import require_POST
+# from django.views.decorators.http import require_POST
 
 from functools import reduce
 # from itertools import filter
 
 from db.models import Card, Collection, CollectionCards
-from db.forms import CollectionCardAddForm
+
 
 class CardListView(generic.ListView):
     model = Card
@@ -75,78 +75,39 @@ def collection_view(request, **kwargs):
 
     return render(request, 'db/collection_detail.html', context=context)
 
-"""
-# @login_required
-class CollectionDetailView(generic.DetailView):
-    model = Collection
-
-    def get_object(self, queryset=None, **kwargs):
-        if queryset is None:
-            queryset = self.get_queryset()
-
-        return get_object_or_404(
-            Collection,
-            ### THIS CAUSES remove/card_slug to aooear
-            # the same as collection_detail when uncommented
-            #owner=self.request.user,
-            name=self.kwargs['collection_name'],
-            # id=self.kwargs['id']
-            )
-
-    if request.POST:
-        card_slug = request.POST.get('card_slug')
-        card = Card.objects.get(slug=card_slug)
-        # Make add/remove into if/then test
-        if card not in collection.cards:
-            CollectionCards.objects.create(
-                collection=collection,
-                card=card,
-                count=1
-            )
-        else:
-            collection.cards.add()
-    # def get_context_data(self, **kwargs):
-    #     context = super(CollectionDetailView, self).get_context_data(**kwargs)
-    #     context['collection_name'] = self.object.name
-    #     context['user_name'] = self.request.user.username
-    #     return context
-"""
 
 @login_required
 # @require_POST
 def add_to_collection(request, card_id):
     collection = Collection.objects.get(owner=request.user)
     card = get_object_or_404(Card, id=card_id)
+    collcardcount = card.collectioncards.all().first().count
     # logic to add more quantities
-    if request.method == 'POST':
-        inst = CollectionCards.objects.get(
-            collection_id=collection.id,
-            card_id=card.id
-        )
-        form = CollectionCardAddForm(request.POST, instance=inst)
-        if form.is_valid():
-            collcard = form.save(commit=False)
-            collcard.count = 10
-            collcard.save()
-            messages.info(request, 'Card added to collection')
-            return redirect(
-                'collection_detail',
-                kwargs={
-                    'collection_name': collection.name,
-                    'user_name': collection.owner,
-                }
-            )
+    try:
+        collcard = CollectionCards.objects.get(collection_id=collection.id, card_id=card.id, count=collcardcount)
+    except CollectionCards.DoesNotExist:
+        collcard = CollectionCards.objects.get(collection_id=collection.id, card_id=card.id, count=1)
 
-    else:
-        form = CollectionCardAddForm()
+    collcard.count = 10
+    collcard.save()
 
-    return redirect(
+    # messages.info(request, 'Card added to collection')
+    return HttpResponseRedirect(reverse(
         'collection_detail',
         kwargs={
             'collection_name': collection.name,
             'user_name': collection.owner,
         }
-    )
+    ))
+
+    # return redirect(reverse(
+    #     'collection_detail',
+    #     kwargs={
+    #         'collection_name': collection.name,
+    #         'user_name': collection.owner,
+    #     }
+    # ))
+
 
 @login_required
 def remove_from_collection(request, card_slug):
@@ -156,21 +117,9 @@ def remove_from_collection(request, card_slug):
     messages.info(request, 'Card has been removed from collection')
     return redirect(reverse('collection_detail'))
 
-    # card_qty = CollectionCards.objects.get(
-    #     collection=self.request.context['collection'],
-    #     card=card
-    # )
-    #
+
     # if card_qty.count > 0:
     #     card_qty.count -= 1
     #     card_qty.save()
     # else:
     #     card_qty.
-
-    # return redirect(reverse(
-    #     'collection_detail',
-    #     kwargs={
-    #         'collection_name': self.collection.name,
-    #         'user_name': self.request.user.username,
-    #     }
-    # ))
