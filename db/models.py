@@ -113,7 +113,7 @@ class CollectionCards(models.Model):
     count = models.PositiveSmallIntegerField()
         #What about land cards?
     class Meta:
-        unique_together = ('collection', 'card',)
+        unique_together = ('card', 'collection',)
 
 
 class Deck(models.Model):
@@ -149,4 +149,4 @@ class DeckCards(models.Model):
     count = models.PositiveSmallIntegerField(validators=[MaxValueValidator(4),])
         #What about land cards?
     class Meta:
-        unique_together = ('deck', 'card',)
+        unique_together = ('card', 'deck',)

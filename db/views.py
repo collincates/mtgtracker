@@ -33,6 +33,7 @@ class CardListView(generic.ListView):
 
         return result
 
+
 class SetListView(generic.ListView):
     allow_empty = False
     model = Card
@@ -61,16 +62,15 @@ def collection_view(request, **kwargs):
     user_collection = Collection.objects.get(owner=request.user)
     collectioncards = CollectionCards.objects.filter(collection__owner=user_collection.owner)
 
-    form = CollectionCardAddForm(request.POST)
+    # form = CollectionCardAddForm(request.POST)
     # for card in collectioncards.all():
-    #     card['qty_update_form'] = CollectionCardAddForm(initial={'count': card['count']})
+    #     card.__dict__['qty_update_form'] = CollectionCardAddForm(initial={'count': card['count']})
 
     context = {
         'collection': user_collection,
         # 'collection_name': user_collection.name,
         # 'user_name': user_collection.owner.username,
         'collectioncards': collectioncards,
-        'form': form,
     }
 
     return render(request, 'db/collection_detail.html', context=context)
@@ -114,24 +114,39 @@ class CollectionDetailView(generic.DetailView):
 
 @login_required
 # @require_POST
-def add_to_collection(request, collcard_id):
+def add_to_collection(request, card_id):
     collection = Collection.objects.get(owner=request.user)
-    card = get_object_or_404(Card, id=collcard_id)
+    card = get_object_or_404(Card, id=card_id)
     # logic to add more quantities
     if request.method == 'POST':
-        inst = CollectionCards.objects.get(collection_id=collection.id, card_id=card.id)
+        inst = CollectionCards.objects.get(
+            collection_id=collection.id,
+            card_id=card.id
+        )
         form = CollectionCardAddForm(request.POST, instance=inst)
         if form.is_valid():
             collcard = form.save(commit=False)
             collcard.count = 10
             collcard.save()
-            return redirect(reverse('collection_detail'))
+            messages.info(request, 'Card added to collection')
+            return redirect(
+                'collection_detail',
+                kwargs={
+                    'collection_name': collection.name,
+                    'user_name': collection.owner,
+                }
+            )
 
     else:
         form = CollectionCardAddForm()
 
-    messages.info(request, 'Card added to collection')
-    return redirect(reverse('collection_detail'))
+    return redirect(
+        'collection_detail',
+        kwargs={
+            'collection_name': collection.name,
+            'user_name': collection.owner,
+        }
+    )
 
 @login_required
 def remove_from_collection(request, card_slug):

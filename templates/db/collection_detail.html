@@ -33,18 +33,9 @@
               {{ card.name }}
             </td>
             <td>
-              {% for collcard in card.collectioncards_set.all %}
-                {{ collcard.count }}
-              {% endfor %}
-
-              <form action="{% url 'collection_add' card.id %}" method="POST">
-                {% csrf_token %}
-                  <p>{{ form.count }}</p>
-                <input type="submit" value="Update" class="btn btn-info">
-              </form>
-            </td>
-            <td>
-              <a href="{% url 'collection_remove' card.slug %}">Remove</a>
+              <a href="{% url 'collection_remove' card.id %}" class="btn btn-primary">-</a>
+              <span>{{ card.collectioncards.all.first.count }}</span>
+              <a href="{% url 'collection_add' card.id %}" class="btn btn-primary">+</a>
             </td>
           </tr>
         {% endfor %}
