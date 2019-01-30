@@ -6,7 +6,8 @@ from . import views
     # path('', views.BrowseDatabaseView, name='browse-database'),
 urlpatterns = [
     re_path(r'^add/(?P<card_id>\d+)/$', views.add_card_to_collection, name='collection_add'),
-    re_path(r'^(?P<user_name>[-\w]+)/(?P<collection_name>[-\w]+)/$', views.collection_view, name='collection_view'),
+    re_path(r'^remove/(?P<card_id>\d+)/$', views.remove_card_from_collection, name='collection_remove'),
+    re_path(r'^collection/(?P<user_name>[-\w]+)/(?P<collection_name>[-\w]+)/$', views.collection_view, name='collection_view'),
     re_path(r'^card/(?P<card_slug>[-\w]+)$', views.CardDetailView.as_view(), name='card_detail'),
 ]
 
