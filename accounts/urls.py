@@ -1,6 +1,8 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
-urlpatterns = [
+# app_name = 'accounts'
 
+urlpatterns = [
+    re_path(r'^signup/$', views.signup, name='signup'),
 ]
