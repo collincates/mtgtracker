@@ -28,10 +28,12 @@
           </td>
           <td>
             {{ card.name }}
+            {{ card.id }}
           </td>
           <td>
+            <a href="{% url 'collection_add' card.id %}" class="btn btn-primary">-</a>
             <span>{{ card.collectioncards.all.first.count }}</span>
-            <a href="{% url 'test_add' card_id=card.id %}" class="btn btn-primary">+</a>
+            <a href="{% url 'collection_add' card.id %}" class="btn btn-primary">+</a>
           </td>
         </tr>
       {% endfor %}

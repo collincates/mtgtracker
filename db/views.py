@@ -11,7 +11,7 @@ from django.views import generic
 from functools import reduce
 # from itertools import filter
 
-from db.models import Card, Collection, CollectionCards
+from db.models import Card, Collection, CollectionCard
 
 
 class CardListView(generic.ListView):
@@ -56,52 +56,52 @@ class CardDetailView(generic.DetailView):
             slug=self.kwargs['card_slug'],
             # set_name=self.kwargs['set_slug'],
             )
+#
+# @login_required
+# def collection_view(request, **kwargs):
+#     user_collection = Collection.objects.get(owner=request.user, name=collection_name)
+#     collectioncards = CollectionCard.objects.filter(collection__owner=user_collection.owner)
+#
+#
+#     context = {
+#         'collection': user_collection,
+#         'collectioncards': collectioncards,
+#     }
+#
+#     return render(request, 'db/collection_detail.html', context=context)
 
-@login_required
-def collection_view(request, **kwargs):
-    user_collection = Collection.objects.get(owner=request.user, name=collection_name)
-    collectioncards = CollectionCards.objects.filter(collection__owner=user_collection.owner)
-
-
-    context = {
-        'collection': user_collection,
-        'collectioncards': collectioncards,
-    }
-
-    return render(request, 'db/collection_detail.html', context=context)
-
-
-@login_required
-def add_to_collection(request, card_id):
-    user_collection = Collection.objects.get(owner=request.user)
-    collectioncards = CollectionCards.objects.filter(collection__owner=user_collection.owner)
-    card = get_object_or_404(Card, id=card_id)
-    collcardcount = card.collectioncards.all().first().count
-    # logic to add more quantities
-    try:
-        collcard = CollectionCards.objects.get(collection_id=user_collection.id, card_id=card.id, count=collcardcount)
-    except CollectionCards.DoesNotExist:
-        collcard = CollectionCards.objects.get(collection_id=user_collection.id, card_id=card.id, count=1)
-
-    # if card_qty.count > 0:
-    #     card_qty.count -= 1
-    #     card_qty.save()
-    # else:
-    #     card_qty.
-
-
-    collcard.count = 10
-    collcard.save()
-
-    messages.info(request, 'Card added to collection')
-
-    return redirect(reverse(
-        'collection_detail',
-        kwargs={
-            'collection_name': user_collection.name,
-            'user_name': user_collection.owner.username,
-        }
-    ))
+#
+# @login_required
+# def add_to_collection(request, card_id):
+#     user_collection = Collection.objects.get(owner=request.user)
+#     collectioncards = CollectionCard.objects.filter(collection__owner=user_collection.owner)
+#     card = get_object_or_404(Card, id=card_id)
+#     collcardcount = card.collectioncards.all().first().count
+#     # logic to add more quantities
+#     try:
+#         collcard = CollectionCard.objects.get(collection_id=user_collection.id, card_id=card.id, count=collcardcount)
+#     except CollectionCard.DoesNotExist:
+#         collcard = CollectionCard.objects.get(collection_id=user_collection.id, card_id=card.id, count=1)
+#
+#     # if card_qty.count > 0:
+#     #     card_qty.count -= 1
+#     #     card_qty.save()
+#     # else:
+#     #     card_qty.
+#
+#
+#     collcard.count = 10
+#     collcard.save()
+#
+#     messages.info(request, 'Card added to collection')
+#
+#     return redirect(reverse(
+#         'collection_detail',
+#         kwargs={
+#             'collection_name': user_collection.name,
+#             'user_name': user_collection.owner.username,
+#         }
+#     ))
 
 
 # @login_required
@@ -113,37 +113,44 @@ def add_to_collection(request, card_id):
 #     return redirect(reverse('collection_detail'))
 
 
+@login_required
+def collection_view(request, collection_name, user_name):
 
-def test_view(request, user_name, collection_name):
-    user_collection = Collection.objects.get(name=collection_name, owner_id__username=user_name)
-    collectioncards = CollectionCards.objects.filter(collection__owner=user_collection.owner)
+    user_collection = Collection.objects.filter(
+                    name=collection_name,
+                    owner__username=user_name
+                    ).get()
 
     context = {
         'collection': user_collection,
-        'collectioncards': collectioncards,
     }
 
-    return render(request, 'db/test_view.html', context=context)
+    return render(request, 'db/collection_view.html', context=context)
 
-
-def test_add(request, card_id):
-    user_collection = Collection.objects.get(owner_id__username=request.user)
-    collectioncards = CollectionCards.objects.filter(collection__owner=user_collection.owner)
+@login_required
+def add_card_to_collection(request, card_id):
     card = get_object_or_404(Card, id=card_id)
-    collcardcount = card.collectioncards.all().first().count
 
     try:
-        collcard = CollectionCards.objects.get(collection_id=user_collection.id, card_id=card.id, count=collcardcount)
-    except CollectionCards.DoesNotExist:
-        collcard = CollectionCards.objects.get(collection_id=user_collection.id, card_id=card.id, count=1)
+        collectioncard = CollectionCard.objects.get(
+                       collection_id=request.user.collection.id,
+                       card_id=card.id
+                       )
 
-    collcard.count = 10
-    collcard.save()
+        collectioncard.count += 1
+        collectioncard.save()
+
+    except CollectionCard.DoesNotExist:
+        collectioncard = CollectionCard.objects.create(
+                       collection_id=request.user.collection.id,
+                       card_id=card.id,
+                       count=1
+                       )
 
     return redirect(reverse(
-        'test_view',
+        'collection_view',
         kwargs={
-            'collection_name': user_collection.name,
-            'user_name': user_collection.owner.username,
+            'collection_name': request.user.collection.name,
+            'user_name': request.user,
         }
     ))

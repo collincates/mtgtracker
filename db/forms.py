@@ -12,5 +12,5 @@ QTY_CHOICES = [i for i in range(1, 4)]
 class CollectionCardAddForm(forms.ModelForm):
 
     class Meta:
-        model = CollectionCards
+        model = CollectionCard
         fields = ('collection', 'card', 'count',)

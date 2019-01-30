@@ -10,7 +10,7 @@ class Card(models.Model):
     artist = models.CharField(max_length=100)
     border = models.CharField(max_length=10, null=True)
     cmc = models.FloatField(null=True)
-    # collection = models.ManyToManyField('Collection', null=True, related_name='cards', through='CollectionCards')
+    # collection = models.ManyToManyField('Collection', null=True, related_name='cards', through='CollectionCard')
     color_identity = ArrayField(models.CharField(max_length=1, null=True), null=True)
     colors = ArrayField(models.CharField(max_length=5, null=True), null=True)
     # deck = models.ManyToManyField('Deck', null=True, related_name='cards', through='DeckCards')
@@ -78,7 +78,7 @@ class Collection(models.Model):
         related_name='collection'
     )
     decks = models.ManyToManyField('Deck', related_name='collections')
-    cards = models.ManyToManyField('Card', through='CollectionCards', related_name='collections')
+    cards = models.ManyToManyField('Card', through='CollectionCard', related_name='collections')
 
     class Meta:
         ordering = ('name',)
@@ -97,7 +97,7 @@ class Collection(models.Model):
         )
 
 
-class CollectionCards(models.Model):
+class CollectionCard(models.Model):
     collection = models.ForeignKey(
         Collection,
         on_delete=models.CASCADE,
