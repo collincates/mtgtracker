@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}<title>Test View</title>{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <div>
+    <p>PLACEHOLDER FOR FILTER TOOLBAR</p>
+    <p>{{ request.user }} request.user</p>
+    <p>{{ request.user.collection }} request.user.collection</p>
+    <p>{{ collection.owner }} collection.owner</p>
+  </div>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Card</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for card in collection.cards.all %}
+        <tr>
+          <td>
+            <a href="{{ card.get_absolute_url }}">
+              <img src="{% if card.image_url %} {{ card.image_url }} {% else %} No Image {% endif %}" alt="..." width="95" height="132">
+            </a>
+          </td>
+          <td>
+            {{ card.name }}
+          </td>
+          <td>
+            <span>{{ card.collectioncards.all.first.count }}</span>
+            <a href="{% url 'test_add' card_id=card.id %}" class="btn btn-primary">+</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
