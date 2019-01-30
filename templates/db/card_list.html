@@ -14,9 +14,9 @@
   {% for card in card_list %}
     <tr class="cardItem">
       <td class="addremovecolumn">
-        <a href="{% url 'collection_add' card.slug %}" class="btn btn-warning">Add</a>
+        <a href="{% url 'collection_add' card.id %}" class="btn btn-warning">Add</a>
         <p><input class="collectioncardqty" type="number" value="Hi"></p>
-        <a href="{% url 'collection_remove' card.slug %}" class="btn btn-warning">Remove</a>
+        <a href="{% url 'collection_remove' card.id %}" class="btn btn-warning">Remove</a>
       </td>
       <td class="leftcolumn">
         <a href="{% url 'card_detail' card_slug=card.slug %}">
