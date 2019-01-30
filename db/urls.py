@@ -2,8 +2,6 @@ from django.urls import path, re_path
 from . import views
 
 
-    # path('', )
-    # path('', views.BrowseDatabaseView, name='browse-database'),
 urlpatterns = [
     path('cards/', views.CardListView.as_view(), name='card_list'),
     re_path(r'^add/(?P<card_id>\d+)/$', views.add_card_to_collection, name='collection_add'),

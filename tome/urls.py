@@ -7,7 +7,7 @@ from . import views
 
 # Project URLconf
 urlpatterns = [
-    path('', views.HomeView.as_view(), name='home'),
+    path('', include('core.urls')),
     path('tome-administration/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
