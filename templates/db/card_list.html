@@ -3,7 +3,7 @@
 {% block title %}<title>Card Database</title>{% endblock title %}
 
 {% block content %}
-<form id="searchform" action="{% url 'card_list' %}" method="GET" accept-charset="utf-8">
+<form id="searchform" action="{% url 'db:card_list' %}" method="GET" accept-charset="utf-8">
   <button class="searchbutton" type="submit">
     <i class="fa fa-search" aria-hidden="true">GO</i>
   </button>
@@ -14,17 +14,17 @@
   {% for card in card_list %}
     <tr class="cardItem">
       <td class="addremovecolumn">
-        <a href="{% url 'collection_add' card.id %}" class="btn btn-warning">Add</a>
+        <a href="{% url 'collection:collection_add' card.id %}" class="btn btn-warning">Add</a>
         <p><input class="collectioncardqty" type="number" value="Hi"></p>
-        <a href="{% url 'collection_remove' card.id %}" class="btn btn-warning">Remove</a>
+        <a href="{% url 'collection:collection_remove' card.id %}" class="btn btn-warning">Remove</a>
       </td>
       <td class="leftcolumn">
-        <a href="{% url 'card_detail' card_slug=card.slug %}">
+        <a href="{% url 'db:card_detail' card_slug=card.slug %}">
           <img src="{{ card.image_url }}" width="95" height="132">
         </a>
       </td>
       <td class="midcolumn">
-        <p><a href="{% url 'card_detail' card_slug=card.slug %}">{{ card.name }}</a></p>
+        <p><a href="{% url 'db:card_detail' card_slug=card.slug %}">{{ card.name }}</a></p>
         <p>{{ card.set_name }}</p>
         <p>{{ card.type }} {% if card.power and card.toughness %} ({{ card.power }}/{{ card.toughness }}){% endif %}</p>
         <p>{{ card.text }}</p>

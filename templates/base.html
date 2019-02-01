@@ -13,7 +13,7 @@
     <div id="topbar">
       <div class="row">
         <div id="sitelogo" class="col-sm-4">
-          <a href="{% url 'home' %}"><h1>Tome</h1></a>
+          <a href="{% url 'core:home' %}"><h1>Tome</h1></a>
         </div>
         <div id="topnav" class="col-sm-6">
         {% if user.is_authenticated %}

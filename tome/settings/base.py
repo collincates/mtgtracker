@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
 
     'accounts.apps.AccountsConfig',
+    'collection.apps.CollectionConfig',
     'db.apps.DbConfig',
 ]
 
@@ -25,7 +26,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     # Middleware for Debug Toolbar
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

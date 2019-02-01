@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}<title>Test View</title>{% endblock title %}
+{% block title %}<title>Collection View</title>{% endblock title %}
 
 {% block content %}
 <div class="container">
@@ -31,9 +31,9 @@
             {{ card.id }}
           </td>
           <td>
-            <a href="{% url 'collection_remove' card.id %}" class="btn btn-primary">-</a>
+            <a href="{% url 'collection:collection_remove' card.id %}" class="btn btn-primary">-</a>
             <span>{{ card.collectioncards.all.first.count }}</span>
-            <a href="{% url 'collection_add' card.id %}" class="btn btn-primary">+</a>
+            <a href="{% url 'collection:collection_add' card.id %}" class="btn btn-primary">+</a>
           </td>
         </tr>
       {% endfor %}
