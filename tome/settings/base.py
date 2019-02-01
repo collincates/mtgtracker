@@ -16,6 +16,7 @@ INSTALLED_APPS = [
 
     'accounts.apps.AccountsConfig',
     'collection.apps.CollectionConfig',
+    'core.apps.CoreConfig',
     'db.apps.DbConfig',
     'deck.apps.DeckConfig',
 ]
