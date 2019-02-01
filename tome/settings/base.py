@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'collection.apps.CollectionConfig',
     'db.apps.DbConfig',
+    'deck.apps.DeckConfig',
 ]
 
 MIDDLEWARE = [

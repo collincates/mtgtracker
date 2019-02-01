@@ -13,6 +13,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('collection/', include('collection.urls')),
     path('db/', include('db.urls')),
+    path('deck/', include('deck.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Debug Toolbar enabled while in debug mode

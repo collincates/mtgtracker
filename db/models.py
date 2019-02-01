@@ -1,6 +1,5 @@
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
-from django.core.validators import MaxValueValidator
 from django.urls import reverse
 from django.utils.text import slugify
 
@@ -9,10 +8,8 @@ class Card(models.Model):
     artist = models.CharField(max_length=100)
     border = models.CharField(max_length=10, null=True)
     cmc = models.FloatField(null=True)
-    # collection = models.ManyToManyField('Collection', null=True, related_name='cards', through='CollectionCard')
     color_identity = ArrayField(models.CharField(max_length=1, null=True), null=True)
     colors = ArrayField(models.CharField(max_length=5, null=True), null=True)
-    # deck = models.ManyToManyField('Deck', null=True, related_name='cards', through='DeckCards')
     flavor = models.TextField(max_length=1000, null=True)
     foreign_names = JSONField(null=True)
     hand = models.CharField(max_length=10, null=True)
@@ -67,39 +64,3 @@ class Card(models.Model):
     def art_variations(self):
         if self.variations:
             return Card.objects.filter(sdk_id__in=[self.sdk_id, *self.variations]).values_list('slug', flat=True).order_by('id')
-
-
-class Deck(models.Model):
-    name = models.CharField(max_length=255)
-    cards = models.ManyToManyField(
-        Card,
-        through='DeckCards',
-        related_name='decks'
-    )
-
-    class Meta:
-        ordering = ('name',)
-        verbose_name = 'deck'
-        verbose_name_plural = 'decks'
-
-    def __str__(self):
-        return self.name
-
-
-class DeckCards(models.Model):
-    deck = models.ForeignKey(
-        Deck,
-        on_delete=models.CASCADE,
-        related_name='deckcards'
-    )
-
-    card = models.ForeignKey(
-        Card,
-        on_delete=models.CASCADE,
-        related_name='deckcards'
-    )
-
-    count = models.PositiveSmallIntegerField(validators=[MaxValueValidator(4),])
-        #What about land cards?
-    class Meta:
-        unique_together = ('card', 'deck',)

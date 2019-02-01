@@ -1,7 +1,10 @@
 from django.conf import settings
 from django.contrib import admin
-from db.models import Card, Deck
+
+from db.models import Card
+from deck.models import Deck
 from collection.models import Collection
+
 
 class CardInline(admin.TabularInline):
     model = Card

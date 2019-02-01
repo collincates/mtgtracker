@@ -2,7 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
-from db.models import Card, Deck
+from db.models import Card
+from deck.models import Deck
 
 
 class Collection(models.Model):
@@ -12,7 +13,7 @@ class Collection(models.Model):
         on_delete=models.CASCADE,
         related_name='collection'
     )
-    decks = models.ManyToManyField(Deck, related_name='collections')
+    decks = models.ManyToManyField(Deck, through='CollectionDeck', related_name='collections')
     cards = models.ManyToManyField(Card, through='CollectionCard', related_name='collections')
 
     class Meta:
@@ -32,6 +33,27 @@ class Collection(models.Model):
         )
 
 
+class CollectionDeck(models.Model):
+    collection = models.ForeignKey(
+        Collection,
+        on_delete=models.CASCADE,
+        related_name='collectiondecks'
+    )
+
+    deck = models.ForeignKey(
+        Deck,
+        on_delete=models.CASCADE,
+        related_name='collectiondecks'
+    )
+
+        #What about land cards?
+    class Meta:
+        unique_together = ('collection', 'deck',)
+
+    def __str__(self):
+        return self.name
+
+
 class CollectionCard(models.Model):
     collection = models.ForeignKey(
         Collection,
@@ -45,7 +67,10 @@ class CollectionCard(models.Model):
         related_name='collectioncards'
     )
 
-    count = models.PositiveSmallIntegerField()
+    count = models.PositiveIntegerField()
         #What about land cards?
     class Meta:
         unique_together = ('card', 'collection',)
+
+    def __str__(self):
+        return self.name
