@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
-from db.models import Card
+from db.models import Card, Deck
 
 
 class Collection(models.Model):
@@ -12,8 +12,8 @@ class Collection(models.Model):
         on_delete=models.CASCADE,
         related_name='collection'
     )
-    decks = models.ManyToManyField('Deck', related_name='collections')
-    cards = models.ManyToManyField('Card', through='CollectionCard', related_name='collections')
+    decks = models.ManyToManyField(Deck, related_name='collections')
+    cards = models.ManyToManyField(Card, through='CollectionCard', related_name='collections')
 
     class Meta:
         ordering = ('name',)
@@ -24,7 +24,7 @@ class Collection(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('collection_detail',
+        return reverse('collection:collection_detail',
             kwargs={
                 'collection_name': self.name,
                 'user_name': self.owner.username

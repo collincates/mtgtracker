@@ -10,7 +10,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from collection.models import Collection, CollectionCard
+from db.models import Card
 
+
+@login_required
+def collection_create(request):
+    pass
 
 @login_required
 def collection_view(request, collection_name, user_name):
@@ -47,7 +52,7 @@ def add_card_to_collection(request, card_id):
                        )
 
     return redirect(reverse(
-        'collection_view',
+        'collection:collection_view',
         kwargs={
             'collection_name': request.user.collection.name,
             'user_name': request.user,
@@ -70,7 +75,7 @@ def remove_card_from_collection(request, card_id):
         collectioncard.delete()
 
     return redirect(reverse(
-        'collection_view',
+        'collection:collection_view',
         kwargs={
             'collection_name': request.user.collection.name,
             'user_name': request.user,

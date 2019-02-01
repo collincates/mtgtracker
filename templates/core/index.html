@@ -8,7 +8,7 @@
 {{ context }}
 {{ request.user }}
 {% if not request.user.collection %}
-  <!-- <a href="{% url 'collection_create' request.user %}">Start a collection here</a> -->
+  <a href="{% url 'collection:collection_create' request.user %}">Start a collection here</a>
 {% else %}
   <a href="{% url 'collection:collection_view' collection_name=request.user.collection.name user_name=request.user.username %}"</a>
 {% endif %}
