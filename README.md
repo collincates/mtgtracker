@@ -1,9 +1,8 @@
-<h1>**MTG Tracker**</h1>
+<h1>MTG Tracker</h1>
 An app for your Magic: The Gathering collection.
-<hr>
-<h2>**Installation**</h2>
-<hr>
+<h2>Installation</h2>
 <h3>Prerequisites</h3>
+
 - [Install Python3](https://www.python.org/downloads/ "Python.org Downloads") on your system.
 
 - [Install PostgreSQL](https://www.postgresql.org/download/ "PostgreSQL Downloads") on your system.
@@ -11,6 +10,7 @@ An app for your Magic: The Gathering collection.
 - Clone this repository, then `cd` into the `mtgtracker` directory
 
 <h3>Set up a virtual environment</h3>
+
 - Once inside `mtgtracker/`, create a virtual environment with `python3 -m venv env`
 
 - Activate your virtual environment with `source env/bin/activate`
@@ -19,7 +19,8 @@ An app for your Magic: The Gathering collection.
 Refer to `requirements/production.txt` for production-specific dependencies.
 
 <h3>Set up environment variables</h3>
-- Generate a `SECRET_KEY` by entering this code into the command line. Save the `SECRET_KEY` (a string of random letters/numbers/symbols that will print to the command line), you'll need it in a second:
+
+- Generate a `SECRET_KEY` by entering the code below into the command line. Save the `SECRET_KEY` (a string of random letters/numbers/symbols that will print to the command line), you'll need it in a second:
 
   `python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
 
@@ -62,6 +63,7 @@ Refer to `requirements/production.txt` for production-specific dependencies.
 - Re-enter the virtual environment with `source env/bin/activate`
 
 <h3>Create a new user and database in Postgres</h3>
+
 - Open Postgres from the terminal by typing: `psql`
 
 - Create a new Postgres user with a username and password of your choosing, using single quotes around your password.
@@ -74,7 +76,8 @@ Refer to `requirements/production.txt` for production-specific dependencies.
 
 - Exit `psql` by typing `\q`
 
-<h3>Set up the database schema and load in card data</h3>
+<h3>Migrate the database schema and load in card data</h3>
+
 - Make migrations with `python3 manage.py makemigrations`
 
 - Migrate the schema with `python manage.py migrate`
@@ -83,9 +86,10 @@ Refer to `requirements/production.txt` for production-specific dependencies.
 
   `python manage.py update_db_card_database`
 
-- When `update_db_card_database` has finished, you will see an `Update successful` message on the command line indicating a successful transfer. If you see an error message instead, please submit a new issue to us!
+- When `update_db_card_database` has finished, you will see an `Update successful` message on the command line indicating a successful transfer. __If you see an error message instead, please submit a new issue!__
 
 <h3>Create a Django superuser and run the server</h3>
+
 - Enter the following into the command line to create a superuser for the Django project. Follow the prompts that appear:
 
   `python manage.py createsuperuser`
