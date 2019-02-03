@@ -7,6 +7,7 @@ from db.models import Card
 
 class Deck(models.Model):
     name = models.CharField(max_length=150, null=False, blank=False)
+    description = models.CharField(max_length=150, blank=True)
     slug = models.SlugField(max_length=150, null=False, unique=False)
     cards = models.ManyToManyField(
         Card,
@@ -49,4 +50,4 @@ class DeckCard(models.Model):
         unique_together = ('card', 'deck',)
 
     def __str__(self):
-        return self.name
+        return self.card.name

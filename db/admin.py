@@ -2,8 +2,6 @@ from django.conf import settings
 from django.contrib import admin
 
 from db.models import Card
-from deck.models import Deck
-from collection.models import Collection
 
 
 class CardInline(admin.TabularInline):
@@ -30,15 +28,3 @@ class CardAdmin(admin.ModelAdmin):
 
     # Using multiverse_id gives us chronological sort!
     ordering = ['name', 'multiverse_id']
-
-
-@admin.register(Collection)
-class CollectionModelAdmin(admin.ModelAdmin):
-    list_display = ('name', 'owner',)
-
-@admin.register(Deck)
-class DeckModelAdmin(admin.ModelAdmin):
-    list_display = ('name', 'show_cards')
-
-    def show_cards(self, obj):
-        return '/n'.join([card.name for card in obj.cards.all()])

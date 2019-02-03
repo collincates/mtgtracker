@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from collection.models import Collection
+
+
+@admin.register(Collection)
+class CollectionModelAdmin(admin.ModelAdmin):
+    list_display = ('name', 'owner',)

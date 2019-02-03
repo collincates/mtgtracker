@@ -51,7 +51,7 @@ class CollectionDeck(models.Model):
         unique_together = ('collection', 'deck',)
 
     def __str__(self):
-        return self.name
+        return self.deck.name
 
 
 class CollectionCard(models.Model):
@@ -73,4 +73,4 @@ class CollectionCard(models.Model):
         unique_together = ('card', 'collection',)
 
     def __str__(self):
-        return self.name
+        return self.card.name
