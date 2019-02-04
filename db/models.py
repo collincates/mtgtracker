@@ -55,8 +55,12 @@ class Card(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(f'{self.id}-{self.name}')
+        # Initial save to populate ID column
         super(Card, self).save(*args, **kwargs)
+        # Create a slug with format 'id-cardname'
+        self.slug = slugify(f'{self.id}-{self.name}')
+        # Update slug field only
+        super(Card, self).save(update_fields=['slug'])
 
     def get_absolute_url(self):
         return reverse('db:card_detail', kwargs={'card_slug': self.slug})
@@ -66,7 +70,6 @@ class Card(models.Model):
             return Card.objects.filter(
                 sdk_id__in=[self.sdk_id, *self.variations]
                 ).values_list('slug', flat=True).order_by('id')
-
 
 
 class ExpansionSet(models.Model):
