@@ -36,11 +36,9 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.stdout.write('Paginating through the MTGSDK to grab card data.')
         self.stdout.write('This could take a while...')
-
         self._get_all_sets()
         self._update_or_create_set_model_objects()
         self._validate_set_update()
-
         self._get_all_cards()
         self._change_card_id_field_name()
         self._update_or_create_card_model_objects()
@@ -70,6 +68,10 @@ class Command(BaseCommand):
             this_set, created = ExpansionSet.objects.update_or_create(
                 code=expansion.code, defaults={**expansion.__dict__}
             )
+            if created:
+                self.stdout.write(f'CREATED\t{expansion.code}\t{expansion.name}')
+            else:
+                self.stdout.write(f'UPDATED\t{expansion.code}\t{expansion.name}')
 
     def _validate_set_update(self):
         """
@@ -95,7 +97,7 @@ class Command(BaseCommand):
         """
 
         # What logic to use to check the **actual** last page instead of 600?
-        for i in range(1, 10):
+        for i in range(1, 600):
             self.cards.extend(SDKCard.where(page=i).all())
             self.stdout.write(f'Got page {i}')
         self.stdout.write(f'Grabbed {len(self.cards)} cards.')
@@ -138,8 +140,13 @@ class Command(BaseCommand):
 
         for card in self.cards:
             this_card, created = Card.objects.update_or_create(
-                sdk_id=card.sdk_id, defaults={**card.__dict__}
+                sdk_id=card.sdk_id,
+                defaults={**card.__dict__}
             )
+            if created:
+                self.stdout.write(f'CREATED\t{this_card.id}\t{this_card.set}\t{this_card.name}')
+            else:
+                self.stdout.write(f'UPDATED\t{this_card.id}\t{this_card.set}\t{this_card.name}')
 
     def _validate_card_update(self):
         """

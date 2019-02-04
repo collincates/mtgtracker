@@ -31,14 +31,7 @@ class Card(models.Model):
     release_date = models.DateField(null=True)
     rulings = JSONField(null=True)
     sdk_id = models.CharField(max_length=64, unique=True) #This is referred to as `id` in the SDK.
-    # set = models.CharField(max_length=10)
-    set = models.ForeignKey(
-        'ExpansionSet',
-        # to_field='code',
-        # default='code',
-        on_delete=models.CASCADE,
-        related_name='cards'
-    )
+    set = models.CharField(max_length=10)
     set_name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=150, null=False, unique=False)
     source = models.CharField(max_length=255, null=True)
