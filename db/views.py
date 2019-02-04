@@ -16,8 +16,7 @@ from django.views import generic
 from functools import reduce
 # from itertools import filter
 
-from db.models import Card
-
+from db.models import Card, ExpansionSet
 
 class CardListView(generic.ListView):
     model = Card
@@ -39,14 +38,28 @@ class CardListView(generic.ListView):
         return result
 
 
-class SetListView(generic.ListView):
+class ExpansionSetListView(generic.ListView):
     allow_empty = False
-    model = Card
+    model = ExpansionSet
     paginate_by = 100
     template_name = 'db/set_list.html'
 
     def get_queryset(self):
-        return Card.objects.filter(set_name=self.kwargs['set_name'])
+        return Expansion.objects.filter(set=self.kwargs['code'])
+
+
+class ExpansionSetDetailView(generic.DetailView):
+    model = ExpansionSet
+
+    def get_object(self, queryset=None, **kwargs):
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        return get_object_or_404(
+            ExpansionSet,
+            slug=self.kwargs['set_slug'],
+            # set_name=self.kwargs['set_slug'],
+            )
 
 
 class CardDetailView(generic.DetailView):

@@ -33,7 +33,7 @@ class Card(models.Model):
     sdk_id = models.CharField(max_length=64, unique=True) #This is referred to as `id` in the SDK.
     set = models.CharField(max_length=10)
     set_name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=150, null=False, unique=False)
+    slug = models.SlugField(max_length=150, null=False, unique=True)
     source = models.CharField(max_length=255, null=True)
     starter = models.BooleanField(null=True)
     subtypes = ArrayField(models.CharField(max_length=50), null=True)
@@ -85,6 +85,7 @@ class ExpansionSet(models.Model):
     old_code = models.CharField(max_length=10, null=True)
     online_only = models.BooleanField(null=True)
     release_date = models.CharField(max_length=10)
+    slug = models.SlugField(max_length=150, null=False, unique=True)
     type = models.CharField(max_length=50, null=True)
 
     class Meta:
@@ -95,9 +96,9 @@ class ExpansionSet(models.Model):
     def __str__(self):
         return self.name
 
-    # def save(self, *args, **kwargs):
-    #     self.slug = slugify(f'{self.id}-{self.name}')
-    #     super(Card, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        self.slug = slugify(f'{self.name}')
+        super(ExpansionSet, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('db:set_detail', kwargs={'set_code': self.code})

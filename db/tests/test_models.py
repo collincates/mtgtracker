@@ -2,13 +2,13 @@
 from django.test import TestCase
 
 from accounts.models import User
-from db.models import Card, Collection, Deck
+from db.models import Card, ExpansionSet
 
 
 class CardModelTest(TestCase):
 
     @classmethod
-    def setUpTestData(cls):
+    def setUp(cls):
         card1 = Card.objects.create(name='Card 1', set_name='a test set', id=1, sdk_id='123')
         card2 = Card.objects.create(name='Card 2', set_name='a test set', id=2, sdk_id='456')
         card3 = Card.objects.create(
@@ -25,10 +25,11 @@ class CardModelTest(TestCase):
     def test_card_meta_verbose_name_plural(self):
         self.assertEqual(Card._meta.verbose_name_plural, 'cards')
 
-    def test_card_meta_ordering_by_id(self):
+    def test_card_meta_ordering_by_name(self):
         results = Card.objects.all()
         self.assertEqual(results[0].name, 'Card 1')
         self.assertEqual(results[1].name, 'Card 2')
+        self.assertEqual(results[2].name, 'Card 3')
 
     def test_card_string_representation(self):
         card = Card.objects.get(id=1)
@@ -56,45 +57,55 @@ class CardModelTest(TestCase):
             map(repr, ['1-card-1', '2-card-2', '3-card-3'])
         )
 
-class CollectionModelTest(TestCase):
+class ExpansionSetModelTest(TestCase):
 
-    def setUp(self):
-        """Create test user, log in test user, create collection for test user."""
-        self.user1 = User.objects.create_user(username='testuser1', password='12345678')
-        self.user2 = User.objects.create_user(username='testuser2', password='12345678')
+    @classmethod
+    def setUp(cls):
+        alpha = ExpansionSet.objects.create(
+            name='Limited Edition Alpha',
+            code='LEA',
+            id=1,
+            release_date='1993-08-05',
+            )
+        beta = ExpansionSet.objects.create(
+            name='Limited Edition Beta',
+            code='LEB',
+            id=2,
+            release_date='1993-10-04',
+            )
+        unlimited = ExpansionSet.objects.create(
+            name='Unlimited Edition',
+            code='2ED',
+            id=3,
+            release_date='1993-12-01',
+        )
 
-        self.login = self.client.login(username='testuser1', password='12345678')
-        self.login = self.client.login(username='testuser2', password='12345678')
+    def test_expansionset_meta_ordering_by_name(self):
+        results = ExpansionSet.objects.all()
+        self.assertEqual(results[0].name, 'Limited Edition Alpha')
+        self.assertEqual(results[1].name, 'Limited Edition Beta')
+        self.assertEqual(results[2].name, 'Unlimited Edition')
 
-        test_collection1 = Collection.objects.create(name='testcollection1', owner=self.user1)
-        test_collection2 = Collection.objects.create(name='testcollection2', owner=self.user2)
+    def test_expansionset_meta_verbose_name(self):
+        self.assertEqual(ExpansionSet._meta.verbose_name, 'set')
 
-        card1 = Card.objects.create(name='Card 1', set_name='a test set', id=1, sdk_id='123')
-        card2 = Card.objects.create(name='Card 2', set_name='a test set', id=2, sdk_id='456')
+    def test_expansionset_meta_verbose_name_plural(self):
+        self.assertEqual(ExpansionSet._meta.verbose_name_plural, 'sets')
 
-        deck1 = Deck.objects.create(name='testdeck1')#, cards=[card1, card2,])
-        deck2 = Deck.objects.create(name='testdeck2')#, cards=[card1, card2,])
+    def test_expansionset_string_representation(self):
+        expansionset = ExpansionSet.objects.get(id=1)
+        self.assertEqual(expansionset.__str__(), expansionset.name)
 
-        cards = [card1, card2,]
+    def test_expansionset_override_save_with_slug(self):
+        # ExpansionSet class comes with a blank slug upon instantiation.
+        expansionset = ExpansionSet(name='Test Expansion Set')
+        # Assert SlugField contains default blank value.
+        self.assertEqual(expansionset.slug, '')
+        # .save() is overriden to call slugify(f'{expansionset.name}')
+        expansionset.save()
+        self.assertEqual(expansionset.slug, 'test-expansion-set')
 
-
-    def test_collection_meta_verbose_name(self):
-        self.assertEqual(Collection._meta.verbose_name, 'collection')
-
-    def test_collection_meta_verbose_name_plural(self):
-        self.assertEqual(Collection._meta.verbose_name_plural, 'collections')
-
-    def test_collection_meta_ordering_by_id(self):
-        results = Collection.objects.all()
-        self.assertEqual(results[0].name, 'testcollection1')
-        self.assertEqual(results[1].name, 'testcollection2')
-
-    def test_collection_string_representation(self):
-        collection = Collection.objects.get(name='testcollection1')
-        self.assertEqual(collection.__str__(), collection.name)
-
-    def test_collection_get_absolute_url(self):
-        user = User.objects.get(username='testuser1')
-        collection = Collection.objects.get(name='testcollection1')
-        collection_abs_url = collection.get_absolute_url()
-        self.assertEqual(collection_abs_url, '/db/testuser1/testcollection1/')
+    def test_expansionset_get_absolute_url(self):
+        expansionset = ExpansionSet.objects.get(id=3)
+        expansionset_abs_url = expansionset.get_absolute_url()
+        self.assertequal(expansionset_abs_url, '/db/2ED')

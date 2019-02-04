@@ -5,5 +5,5 @@ from django.test import TestCase
 class UpdateDBCardDatabaseTest(TestCase):
     def test_command_output(self):
         out = StringIO()
-        call_commaned('update_db_card_database', stdout=out)
-        self.assertIn('problem', out.getvalue())
+        call_command('update_card_set_database', stdout=out)
+        self.assertIn('Update successful', out.getvalue())

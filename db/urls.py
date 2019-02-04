@@ -5,8 +5,8 @@ from . import views
 app_name = 'db'
 
 urlpatterns = [
-    path('cards/', views.CardListView.as_view(), name='card_list'),
+    re_path(r'^cards/$', views.CardListView.as_view(), name='card_list'),
     re_path(r'^card/(?P<card_slug>[-\w]+)$', views.CardDetailView.as_view(), name='card_detail'),
+    re_path(r'^expansions/$', views.ExpansionSetListView.as_view(), name='set_list'),
+    re_path(r'^expansions/<set_slug>$', views.ExpansionSetDetailView.as_view(), name='set_detail'),
 ]
-
-    # path('<set_name>/', views.SetListView.as_view(), name='set_list'),
