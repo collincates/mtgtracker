@@ -1,7 +1,10 @@
 from django.core.management.base import BaseCommand
 # Alias these to avoid namespace conflicts
 from mtgsdk import Card as SDKCard
+from mtgsdk import Set
 from db.models import Card as Card
+from db.models import ExpansionSet
+
 
 
 def progress(count, total, status=''):
@@ -28,32 +31,80 @@ class Command(BaseCommand):
     def __init__(self):
         super(Command, self).__init__()
         self.cards = []
+        self.sets = []
 
     def handle(self, *args, **kwargs):
         self.stdout.write('Paginating through the MTGSDK to grab card data.')
         self.stdout.write('This could take a while...')
-        self._get_cards()
-        self._change_id_field_name()
-        self._create_card_model_objects()
-        self._validate()
 
-    def _get_cards(self):
+        self._get_all_sets()
+        self._update_or_create_set_model_objects()
+        self._validate_set_update()
+
+        self._get_all_cards()
+        self._change_card_id_field_name()
+        self._update_or_create_card_model_objects()
+        self._validate_card_update()
+
+    def _get_all_sets(self):
+        """
+        Iterate through MTGSDK and extend all Set objects to self.sets.
+        """
+
+        self.sets.extend(Set.all())
+        self.stdout.write(f'Grabbed {len(self.sets)} sets.')
+
+    def _update_or_create_set_model_objects(self):
+        """
+        Loop through SDK Set objects contained in self.sets.
+        Create/save a db.models.ExpansionSet object for each SDK Set object.
+
+        If set information already exists in db_card table,
+        perform update() instead of create()
+        """
+
+        #  Sort all expansions by release date, earliest first.
+        self.sets.sort(key=lambda x: x.release_date)
+
+        for expansion in self.sets:
+            this_set, created = ExpansionSet.objects.update_or_create(
+                code=expansion.code, defaults={**expansion.__dict__}
+            )
+
+    def _validate_set_update(self):
+        """
+        Confirm that total sets existing in the MTGSDK API
+        matches the total sets existing in the database.
+        """
+
+        sdksets_all = len(self.sets)
+        sets_all = len(ExpansionSet.objects.all())
+        if sdksets_all != sets_all:
+            self.stdout.write(self.style.ERROR('***There was a problem.***'))
+            self.stdout.write(self.style.ERROR(f'{sdksets_all - sets_all} sets were not inserted into the database.'))
+            #Also return set_name, code of missing sets.
+        else:
+            self.stdout.write(self.style.SUCCESS(f'Update successful. There are now {sets_all} unique sets in the database.'))
+
+    def _get_all_cards(self):
         """
         Paginate through MTGSDK and retrieve all Card objects.
 
-        Upper range limit of 500 will need to be changed as
+        Upper range limit of 600 will need to be changed as
         more sets/cards are added to the game.
         """
 
         # What logic to use to check the **actual** last page instead of 600?
-        for i in range(1, 600):
+        for i in range(1, 10):
             self.cards.extend(SDKCard.where(page=i).all())
             self.stdout.write(f'Got page {i}')
         self.stdout.write(f'Grabbed {len(self.cards)} cards.')
 
-    def _change_id_field_name(self):
+    def _change_card_id_field_name(self):
         """
-        MTGSDK provides a UUID for every card in the SDK.
+        MTGSDK contains a UUID in a column named 'id' for each card in the SDK.
+        This method reassigns the column named 'id' to a column named 'sdk_id'.
+
 
         From the MTGSDK docs:
 
@@ -69,20 +120,20 @@ class Command(BaseCommand):
         This method changes the key name from ['id'] to ['sdk_id'],
         allowing for a Card object's **kwargs to be passed into a
         Django Model's create() method without error, while retaining
-        the intended functionality of Django's AutoField
+        the intended functionality of Django's AutoField column 'id'
         which acts as an auto-incrementing primary key.
         """
         for card in self.cards:
             card.__dict__['sdk_id'] = card.__dict__.pop('id')
             self.stdout.write(f'changed {self.cards.index(card)}')
 
-    def _create_card_model_objects(self):
+    def _update_or_create_card_model_objects(self):
         """
         Loop through SDKCard objects contained in self.cards.
         Create/save a db.models.Card object for each SDKCard object.
 
         If card information already exists in db_card table,
-        perform update() instead.
+        perform update() instead of create().
         """
 
         for card in self.cards:
@@ -90,7 +141,7 @@ class Command(BaseCommand):
                 sdk_id=card.sdk_id, defaults={**card.__dict__}
             )
 
-    def _validate(self):
+    def _validate_card_update(self):
         """
         Confirm that total cards existing in the MTGSDK API
         matches the total cards existing in the database.

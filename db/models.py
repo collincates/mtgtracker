@@ -31,7 +31,14 @@ class Card(models.Model):
     release_date = models.DateField(null=True)
     rulings = JSONField(null=True)
     sdk_id = models.CharField(max_length=64, unique=True) #This is referred to as `id` in the SDK.
-    set = models.CharField(max_length=10)
+    # set = models.CharField(max_length=10)
+    set = models.ForeignKey(
+        'ExpansionSet',
+        # to_field='code',
+        # default='code',
+        on_delete=models.CASCADE,
+        related_name='cards'
+    )
     set_name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=150, null=False, unique=False)
     source = models.CharField(max_length=255, null=True)
@@ -63,4 +70,41 @@ class Card(models.Model):
 
     def art_variations(self):
         if self.variations:
-            return Card.objects.filter(sdk_id__in=[self.sdk_id, *self.variations]).values_list('slug', flat=True).order_by('id')
+            return Card.objects.filter(
+                sdk_id__in=[self.sdk_id, *self.variations]
+                ).values_list('slug', flat=True).order_by('id')
+
+
+
+class ExpansionSet(models.Model):
+    booster = JSONField(null=True)
+    border = models.CharField(max_length=10, null=True)
+    block = models.CharField(max_length=50, null=True)
+    code = models.CharField(max_length=10, unique=True)
+    gatherer_code = models.CharField(max_length=10, null=True)
+    magic_cards_info_code = models.CharField(max_length=10, null=True)
+    mkm_id = models.CharField(max_length=10, null=True)
+    mkm_name = models.CharField(max_length=30, null=True)
+    name = models.CharField(max_length=255)
+    old_code = models.CharField(max_length=10, null=True)
+    online_only = models.BooleanField(null=True)
+    release_date = models.CharField(max_length=10)
+    type = models.CharField(max_length=50, null=True)
+
+    class Meta:
+        ordering = ('release_date',)
+        verbose_name = 'set'
+        verbose_name_plural = 'sets'
+
+    def __str__(self):
+        return self.name
+
+    # def save(self, *args, **kwargs):
+    #     self.slug = slugify(f'{self.id}-{self.name}')
+    #     super(Card, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('db:set_detail', kwargs={'set_code': self.code})
+
+    # def generate_random_booster(self):
+    #     pass
