@@ -97,11 +97,15 @@ class ExpansionSet(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(f'{self.name}')
+        # Initial save to populate ID column
         super(ExpansionSet, self).save(*args, **kwargs)
+        # Create a slug with format 'expansion-set-name'
+        self.slug = slugify(f'{self.name}')
+        # Update slug field only
+        super(ExpansionSet, self).save(update_fields=['slug'])
 
     def get_absolute_url(self):
-        return reverse('db:set_detail', kwargs={'set_code': self.code})
+        return reverse('db:set_detail', kwargs={'set_slug': self.slug})
 
     # def generate_random_booster(self):
     #     pass

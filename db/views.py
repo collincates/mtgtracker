@@ -22,7 +22,7 @@ class CardListView(generic.ListView):
     model = Card
     paginate_by = 100
     template_name = 'db/card_list.html'
-
+    ordering = ['name']
 
     def get_queryset(self):
         result=super(CardListView, self).get_queryset()
@@ -34,32 +34,7 @@ class CardListView(generic.ListView):
                 reduce(operator.and_,
                     (Q(name__icontains=q) for q in query_list))
             )
-
         return result
-
-
-class ExpansionSetListView(generic.ListView):
-    allow_empty = False
-    model = ExpansionSet
-    paginate_by = 100
-    template_name = 'db/set_list.html'
-
-    def get_queryset(self):
-        return Expansion.objects.filter(set=self.kwargs['code'])
-
-
-class ExpansionSetDetailView(generic.DetailView):
-    model = ExpansionSet
-
-    def get_object(self, queryset=None, **kwargs):
-        if queryset is None:
-            queryset = self.get_queryset()
-
-        return get_object_or_404(
-            ExpansionSet,
-            slug=self.kwargs['set_slug'],
-            # set_name=self.kwargs['set_slug'],
-            )
 
 
 class CardDetailView(generic.DetailView):
@@ -72,5 +47,30 @@ class CardDetailView(generic.DetailView):
         return get_object_or_404(
             Card,
             slug=self.kwargs['card_slug'],
+            # set_name=self.kwargs['set_slug'],
+            )
+
+
+class ExpansionSetListView(generic.ListView):
+    allow_empty = False
+    model = ExpansionSet
+    paginate_by = 100
+    template_name = 'db/expansionset_list.html'
+    ordering = ['name']
+
+    def get_queryset(self):
+        return ExpansionSet.objects.all()
+
+
+class ExpansionSetDetailView(generic.DetailView):
+    model = ExpansionSet
+
+    def get_object(self, queryset=None, **kwargs):
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        return get_object_or_404(
+            ExpansionSet,
+            slug=self.kwargs['set_slug'],
             # set_name=self.kwargs['set_slug'],
             )

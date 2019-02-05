@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ expansionset.name }}</h1>
+  <div class="setDetailContainer">
+  <table class="setDetail">
+    <tbody>
+    <tr>
+      <td>
+        {% if expansionset.image_url %}<img src="{{ expansionset.image_url }}" alt="Image of card {{ expansionset.name }}">{% endif %}
+      </td>
+      <td>
+        {% if expansionset.booster %}<p><strong>Card Name:</strong>{{ expansionset.booster }}</p>{% endif %}
+        {% if expansionset.border %}<p><strong>Mana Cost:</strong> {{ expansionset.border }}</p>{% endif %}
+        {% if expansionset.block %}<p><strong>Converted Mana Cost:</strong>  {{ expansionset.block }}</p>{% endif %}
+        {% if expansionset.code %}<p><strong>Types:</strong> {{ expansionset.code }}</p>{% endif %}
+        {% if expansionset.gatherer_code %}<p><strong>Card Text:</strong> {{ expansionset.gatherer_code }}</p>{% endif %}
+        {% if expansionset.magic_cards_info_code %}<p><strong>Flavor Text:</strong> {{ expansionset.magic_cards_info_code }}</p>{% endif %}
+        {% if expansionset.mkm_id %}<p><strong>P/T:</strong>{{ expansionset.mkm_id }}</p>{% endif %}
+        {% if expansionset.mkm_name %}<p><strong>Expansion:</strong>{{ expansionset.mkm_name }}</p>{% endif %}
+        {% if expansionset.name %}<p><strong>Rarity:</strong> {{ expansionset.name }}</p>{% endif %}
+        {% if expansionset.old_code %}<p><strong>All Sets:</strong>{{ expansionset.old_code }} </p>{% endif %}
+        {% if expansionset.online_only %}<p><strong>Card Number:</strong> {{ expansionset.online_only }}</p>{% endif %}
+        {% if expansionset.release_date %}<p><strong>Artist:</strong> {{ expansionset.release_date }}</p>{% endif %}
+        {% if expansionset.slug %}<p><strong>Artist:</strong> {{ expansionset.slug }}</p>{% endif %}
+        {% if expansionset.type %}<p><strong>Artist:</strong> {{ expansionset.type }}</p>{% endif %}
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
+{% endblock %}

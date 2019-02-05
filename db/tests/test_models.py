@@ -9,8 +9,18 @@ class CardModelTest(TestCase):
 
     @classmethod
     def setUp(cls):
-        card1 = Card.objects.create(name='Card 1', set_name='a test set', id=1, sdk_id='123')
-        card2 = Card.objects.create(name='Card 2', set_name='a test set', id=2, sdk_id='456')
+        card1 = Card.objects.create(
+            name='Card 1',
+            set_name='a test set',
+            id=1,
+            sdk_id='123'
+        )
+        card2 = Card.objects.create(
+            name='Card 2',
+            set_name='a test set',
+            id=2,
+            sdk_id='456'
+        )
         card3 = Card.objects.create(
             name='Card 3',
             set_name='a test set',
@@ -98,7 +108,7 @@ class ExpansionSetModelTest(TestCase):
 
     def test_expansionset_override_save_with_slug(self):
         # ExpansionSet class comes with a blank slug upon instantiation.
-        expansionset = ExpansionSet(name='Test Expansion Set')
+        expansionset = ExpansionSet(name='Test Expansion Set', id=4)
         # Assert SlugField contains default blank value.
         self.assertEqual(expansionset.slug, '')
         # .save() is overriden to call slugify(f'{expansionset.name}')
@@ -108,4 +118,4 @@ class ExpansionSetModelTest(TestCase):
     def test_expansionset_get_absolute_url(self):
         expansionset = ExpansionSet.objects.get(id=3)
         expansionset_abs_url = expansionset.get_absolute_url()
-        self.assertequal(expansionset_abs_url, '/db/2ED')
+        self.assertEqual(expansionset_abs_url, '/db/expansion/unlimited-edition')

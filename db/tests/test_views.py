@@ -1,68 +1,10 @@
+import datetime
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
 
 from accounts.models import User
-from db.models import Card, Collection, Deck
-
-
-class SetListViewTest(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        number_of_cards = 302
-
-        for card_id in range(number_of_cards):
-            Card.objects.create(
-                name=f'Card {card_id}',
-                set_name='Test Set Name',
-                id=f'{card_id}',
-                sdk_id=f'{card_id}',
-            )
-    #
-    # def test_set_list_view_url_exists_at_desired_location(self):
-    #     response = self.client.get('/db/Test Set Name/')
-    #     self.assertEqual(response.status_code, 200)
-
-
-    def test_set_list_view_url_accessible_by_name(self):
-        card = Card.objects.get(id=1)
-        response = self.client.get(reverse('set_list', args=[card.set_name]))
-        self.assertEqual(response.status_code, 200)
-
-    def test_set_list_view_uses_correct_template(self):
-        card = Card.objects.get(id=1)
-        response = self.client.get(reverse('set_list', args=[card.set_name]))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'db/set_list.html')
-
-    def test_set_list_view_empty_database(self):
-        Card.objects.all().delete()
-        with self.assertRaises(NameError):
-            response = self.client.get(reverse('set_list', args=[card.set_name]))
-
-    def test_set_list_view_with_empty_queryset(self):
-        queryset = None
-        with self.assertRaises(NameError):
-            response = self.client.get(reverse('set_list', args=[card.set_name]))
-
-    def test_set_list_view_pagination_is_one_hundred(self):
-        card = Card.objects.all()
-        response = self.client.get(reverse('set_list', args=[card[0].set_name]))
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('is_paginated' in response.context)
-        self.assertTrue(response.context['is_paginated'] == True)
-        self.assertTrue(len(response.context['card_list']) == 100)
-
-    def test_set_list_view_pagination_lists_all_cards(self):
-        card = Card.objects.all()
-        response = self.client.get(reverse('set_list', args=[card[0].set_name]))
-
-        response = self.client.get(reverse('set_list', args=[card[0].set_name]) + '?page=4')
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('is_paginated' in response.context)
-        self.assertTrue(response.context['is_paginated'] == True)
-        self.assertTrue(len(response.context['card_list']) == 2)
+from db.models import Card, ExpansionSet
 
 
 class CardListViewTest(TestCase):
@@ -84,42 +26,45 @@ class CardListViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_card_list_view_url_accessible_by_name(self):
-        response = self.client.get(reverse('card_list'))
+        response = self.client.get(reverse('db:card_list'))
         self.assertEqual(response.status_code, 200)
 
     def test_card_list_view_uses_correct_template(self):
-        response = self.client.get(reverse('card_list'))
+        response = self.client.get(reverse('db:card_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'db/card_list.html')
 
     def test_card_list_view_has_no_cards(self):
         Card.objects.all().delete()
-        response = self.client.get(reverse('card_list'))
+        response = self.client.get(reverse('db:card_list'))
         self.assertContains(
             response,
             'No cards are available with these options.'
         )
 
     def test_card_list_view_pagination_is_one_hundred(self):
-        response = self.client.get(reverse('card_list'))
+        response = self.client.get(reverse('db:card_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTrue('is_paginated' in response.context)
         self.assertTrue(response.context['is_paginated'] == True)
         self.assertTrue(len(response.context['card_list']) == 100)
 
     def test_card_list_view_pagination_lists_all_cards(self):
-        response = self.client.get(reverse('card_list') + '?page=3')
+        response = self.client.get(reverse('db:card_list') + '?page=3')
         self.assertEqual(response.status_code, 200)
         self.assertTrue('is_paginated' in response.context)
         self.assertTrue(response.context['is_paginated'] == True)
         self.assertTrue(len(response.context['card_list']) == 3)
 
+    def test_card_list_view_ordered_by_name(self):
+        response = self.client.get(reverse('db:card_list'))
+        sorted_cards = Card.objects.all().order_by('name')
+        self.assertEqual(response.context['object_list'][79], sorted_cards[79])
 
 class CardDetailViewTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        # user = get_user_model.objects.create(username='test_user')
         card = Card.objects.create(
             name=f'Test Card',
             set_name='a test set',
@@ -134,98 +79,105 @@ class CardDetailViewTest(TestCase):
 
     def test_card_detail_view_url_accessible_by_name_with_slug_argument(self):
         card = Card.objects.get(id=1)
-        response = self.client.get(reverse('card_detail', args=[card.slug]))
+        response = self.client.get(reverse('db:card_detail', args=[card.slug]))
         self.assertEqual(response.status_code, 200)
 
     def test_card_detail_view_contains_custom_slug_field(self):
         card = Card.objects.get(id=1)
         response = self.client.get(reverse(
-            'card_detail',
+            'db:card_detail',
             kwargs={
-                # 'set_slug': slugify(card.set_name),
                 'card_slug': card.slug,
             }
         ))
         self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.context[-1]['view'].slug_field, 'slug')
+        self.assertEqual(response.context[-1]['view'].slug_field, 'slug')
 
     def test_card_detail_view_contains_custom_slug_url_kwarg(self):
         card = Card.objects.get(id=1)
-        response = self.client.get(reverse('card_detail', args=[card.slug]))
+        response = self.client.get(reverse('db:card_detail', args=[card.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context[-1]['view'].slug_url_kwarg, 'slug')
 
     def test_card_detail_view_card_name_on_detail_page(self):
         card = Card.objects.get(id=1)
-        response = self.client.get(reverse('card_detail', args=[card.slug]))
+        response = self.client.get(reverse('db:card_detail', args=[card.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, card.name)
         self.assertEqual(response.context['card'].name, 'Test Card')
 
     def test_card_detail_view_card_sdk_id_on_detail_page(self):
         card = Card.objects.get(id=1)
-        response = self.client.get(reverse('card_detail', args=[card.slug]))
+        response = self.client.get(reverse('db:card_detail', args=[card.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, card.name)
         self.assertEqual(response.context['card'].sdk_id, 'test sdk_id')
 
 
-class CollectionDetailViewTest(TestCase):
+class SetListViewTest(TestCase):
 
-    def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='12345678')
+    @classmethod
+    def setUp(cls):
+        number_of_sets = 402
+        today = datetime.datetime.today()
+        dates = [
+            (today + datetime.timedelta(days=x)).date().isoformat() \
+            for x in range(0, number_of_sets)
+        ]
 
-        self.login = self.client.login(
-            username=self.user.username,
-            password=self.user.password
-        )
-
-        collection = Collection.objects.create(
-            name='testcollection',
-            owner=self.user
+        for set_id in range(number_of_sets):
+            ExpansionSet.objects.create(
+                id=f'{set_id}',
+                code=f'A{set_id}',
+                name=f'Set {set_id}',
+                release_date=f'{dates[set_id]}'
             )
 
-    def test_collection_detail_view_url_exists_at_desired_location(self):
-        collection = Collection.objects.get(name='testcollection')
-        response = self.client.get(collection.get_absolute_url())
+    def test_set_list_view_url_exists_at_desired_location(self):
+        expansion = ExpansionSet.objects.get(id=23)
+        response = self.client.get('/db/expansion/set-23')
         self.assertEqual(response.status_code, 200)
 
-    def test_collection_detail_view_url_accessible_by_collection_name_and_user_name(self):
-        collection = Collection.objects.get(name='testcollection')
-        url = f'/db/testuser/testcollection/'
-        response = self.client.get(reverse(
-            'collection_detail',
-            kwargs={
-                'collection_name': collection.name,
-                'user_name': self.user.username
-                }
-            ))
+    def test_set_list_view_url_accessible_by_name(self):
+        expansion = ExpansionSet.objects.get(id=1)
+        response = self.client.get(reverse('db:set_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['request'].path, url)
 
-    # def test_collection_detail_view_contains_collection_name_and_user_name(self):
-    #     collection = Collection.objects.get(name='testcollection')
-    #     response = self.client.get(reverse(
-    #         'collection_detail',
-    #         kwargs={
-    #             'collection_name': collection.name,
-    #             'user_name': self.user.username
-    #             }
-    #         ))
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.context[-1]['view'].context['collection_name'], 'collection_name')
-    #     # self.assertEqual(response.context[-1]['view'].collection_name, 'slug')
-
-    def test_collection_detail_view_collection_name_on_detail_page(self):
-        collection = Collection.objects.get(name='testcollection')
-        response = self.client.get(collection.get_absolute_url())
+    def test_set_list_view_uses_correct_template(self):
+        expansion = ExpansionSet.objects.get(id=200)
+        response = self.client.get(reverse('db:set_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, collection.name)
-        self.assertEqual(response.context['collection'].name, 'testcollection')
+        self.assertTemplateUsed(response, 'db/expansionset_list.html')
 
-    def test_collection_detail_view_collection_owner_on_detail_page(self):
-        collection = Collection.objects.get(name='testcollection')
-        response = self.client.get(collection.get_absolute_url())
+    def test_set_list_view_empty_database(self):
+        ExpansionSet.objects.all().delete()
+        response = self.client.get(reverse('db:set_list'))
+        self.assertFalse('object_list' in response.context)
+
+    # def test_set_list_view_with_empty_queryset(self):
+    #     self.queryset = None
+    #     response = self.client.get(reverse('db:set_list'))
+    #     print(response.context)
+    #     self.assertTrue(len(response.context['object_list'] == 0)
+
+    def test_set_list_view_pagination_is_one_hundred(self):
+        response = self.client.get(reverse('db:set_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, collection.owner)
-        self.assertEqual(response.context['collection'].owner, self.user)
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertTrue(len(response.context['expansionset_list']) == 100)
+
+    def test_set_list_view_pagination_lists_all_cards(self):
+        response = self.client.get(reverse('db:set_list') + '?page=5')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertTrue(len(response.context['expansionset_list']) == 2)
+
+    def test_set_list_view_ordered_by_name(self):
+        response = self.client.get(reverse('db:set_list'))
+        sorted_expansionsets = ExpansionSet.objects.all().order_by('name')
+        self.assertEqual(
+            response.context['object_list'][79],
+            sorted_expansionsets[79]
+        )
