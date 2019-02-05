@@ -9,8 +9,7 @@ from db.models import Card, ExpansionSet
 
 class CardListViewTest(TestCase):
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
         # Create 203 cards for pagination tests
         number_of_cards = 203
 
@@ -61,10 +60,13 @@ class CardListViewTest(TestCase):
         sorted_cards = Card.objects.all().order_by('name')
         self.assertEqual(response.context['object_list'][79], sorted_cards[79])
 
+    def test_card_list_get_queryset(self):
+        pass
+
+
 class CardDetailViewTest(TestCase):
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
         card = Card.objects.create(
             name=f'Test Card',
             set_name='a test set',
@@ -114,10 +116,9 @@ class CardDetailViewTest(TestCase):
         self.assertEqual(response.context['card'].sdk_id, 'test sdk_id')
 
 
-class SetListViewTest(TestCase):
+class ExpansionSetListViewTest(TestCase):
 
-    @classmethod
-    def setUp(cls):
+    def setUp(self):
         number_of_sets = 402
         today = datetime.datetime.today()
         # Generate 402 dates in 'YYYY-MM-DD' format, starting from today
@@ -135,51 +136,125 @@ class SetListViewTest(TestCase):
                 release_date=f'{dates[set_id]}'
             )
 
-    def test_set_list_view_url_exists_at_desired_location(self):
+    def test_expansionset_list_view_url_exists_at_desired_location(self):
         expansion = ExpansionSet.objects.get(id=23)
         response = self.client.get('/db/expansion/set-23')
         self.assertEqual(response.status_code, 200)
 
-    def test_set_list_view_url_accessible_by_name(self):
+    def test_expansionset_list_view_url_accessible_by_name(self):
         expansion = ExpansionSet.objects.get(id=1)
         response = self.client.get(reverse('db:set_list'))
         self.assertEqual(response.status_code, 200)
 
-    def test_set_list_view_uses_correct_template(self):
+    def test_expansionset_list_view_uses_correct_template(self):
         expansion = ExpansionSet.objects.get(id=200)
         response = self.client.get(reverse('db:set_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'db/expansionset_list.html')
 
-    def test_set_list_view_empty_database(self):
+    def test_expansionset_list_view_empty_database(self):
         ExpansionSet.objects.all().delete()
         response = self.client.get(reverse('db:set_list'))
         self.assertFalse('object_list' in response.context)
 
-    # def test_set_list_view_with_empty_queryset(self):
+    # def test_expansionset_list_view_with_empty_queryset(self):
     #     self.queryset = None
     #     response = self.client.get(reverse('db:set_list'))
     #     print(response.context)
     #     self.assertTrue(len(response.context['object_list'] == 0)
 
-    def test_set_list_view_pagination_is_one_hundred(self):
+    def test_expansionset_list_view_pagination_is_one_hundred(self):
         response = self.client.get(reverse('db:set_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTrue('is_paginated' in response.context)
         self.assertTrue(response.context['is_paginated'] == True)
         self.assertTrue(len(response.context['expansionset_list']) == 100)
 
-    def test_set_list_view_pagination_lists_all_cards(self):
+    def test_expansionset_list_view_pagination_lists_all_cards(self):
         response = self.client.get(reverse('db:set_list') + '?page=5')
         self.assertEqual(response.status_code, 200)
         self.assertTrue('is_paginated' in response.context)
         self.assertTrue(response.context['is_paginated'] == True)
         self.assertTrue(len(response.context['expansionset_list']) == 2)
 
-    def test_set_list_view_ordered_by_release_date(self):
+    def test_expansionset_list_view_ordered_by_release_date(self):
         response = self.client.get(reverse('db:set_list'))
         sorted_expansionsets = ExpansionSet.objects.all().order_by('release_date')
         self.assertEqual(
             response.context['object_list'][79],
             sorted_expansionsets[79]
         )
+
+class ExpansionSetDetailViewTest(TestCase):
+
+    def setUp(self):
+        expansion = ExpansionSet.objects.create(
+            id=4,
+            code='LE4',
+            name='Limited Edition 4',
+            release_date='1993-04-05'
+        )
+
+    def test_expansionset_detail_view_url_exists_at_desired_location(self):
+        expansion = ExpansionSet.objects.get(id=4)
+        response = self.client.get(expansion.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_expansionset_detail_view_url_accessible_by_name_with_slug_argument(self):
+        expansion = ExpansionSet.objects.get(id=4)
+        response = self.client.get(reverse('db:set_detail', args=[expansion.slug]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_expansionset_detail_view_contains_custom_slug_field(self):
+        expansion = ExpansionSet.objects.get(id=4)
+        response = self.client.get(reverse(
+            'db:set_detail',
+            kwargs={
+                'set_slug': expansion.slug,
+            }
+        ))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context[-1]['view'].slug_field, 'slug')
+
+    def test_expansionset_detail_view_contains_custom_slug_url_kwarg(self):
+        expansion = ExpansionSet.objects.get(id=4)
+        response = self.client.get(reverse('db:set_detail', args=[expansion.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context[-1]['view'].slug_url_kwarg, 'slug')
+
+    def test_expansionset_detail_view_set_name_on_detail_page(self):
+        expansion = ExpansionSet.objects.get(id=4)
+        response = self.client.get(reverse('db:set_detail', args=[expansion.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, expansion.name)
+        self.assertEqual(response.context['expansionset'].name, 'Limited Edition 4')
+        # print(response.context[''])
+
+    def test_expansionset_detail_view_set_release_date_on_detail_page(self):
+        expansion = ExpansionSet.objects.get(id=4)
+        response = self.client.get(reverse('db:set_detail', args=[expansion.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, expansion.release_date)
+        self.assertEqual(response.context['expansionset'].release_date, '1993-04-05')
+
+    def test_expansionset_override_get_context_data(self):
+        card1 = Card.objects.create(
+            name='Card 1',
+            set_name='Limited Edition 4',
+            id=1,
+            sdk_id='123',
+            set = 'LE4'
+        )
+        card2 = Card.objects.create(
+            name='Card 2',
+            set_name='Limited Edition 4',
+            id=2,
+            sdk_id='234',
+            set = 'LE4'
+        )
+        expansion = ExpansionSet.objects.get(id=4)
+        response = self.client.get(reverse('db:set_detail', args=[expansion.slug]))
+        self.assertEqual(response.status_code, 200)
+        print(response.context)
+        self.assertTrue(response.context['set_cards'])
+        self.assertEqual(len(response.context['set_cards']), 2)

@@ -4,10 +4,6 @@ from db.models import Card, ExpansionSet
 
 class dbUrlsTest(TestCase):
 
-    def test_homepage(self):
-        response = self.client.get('')
-        self.assertEqual(response.status_code, 200)
-
     def test_card_list(self):
         response = self.client.get('/db/cards/')
         self.assertEqual(response.status_code, 200)

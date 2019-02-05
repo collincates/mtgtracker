@@ -74,3 +74,8 @@ class ExpansionSetDetailView(generic.DetailView):
             slug=self.kwargs['set_slug'],
             # set_name=self.kwargs['set_slug'],
             )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['set_cards'] = Card.objects.filter(set=self.object.code)
+        return context
