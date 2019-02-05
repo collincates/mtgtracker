@@ -120,6 +120,8 @@ class SetListViewTest(TestCase):
     def setUp(cls):
         number_of_sets = 402
         today = datetime.datetime.today()
+        # Generate 402 dates in 'YYYY-MM-DD' format, starting from today
+        # and incrementing += 1 day per iteration.
         dates = [
             (today + datetime.timedelta(days=x)).date().isoformat() \
             for x in range(0, number_of_sets)
@@ -174,9 +176,9 @@ class SetListViewTest(TestCase):
         self.assertTrue(response.context['is_paginated'] == True)
         self.assertTrue(len(response.context['expansionset_list']) == 2)
 
-    def test_set_list_view_ordered_by_name(self):
+    def test_set_list_view_ordered_by_release_date(self):
         response = self.client.get(reverse('db:set_list'))
-        sorted_expansionsets = ExpansionSet.objects.all().order_by('name')
+        sorted_expansionsets = ExpansionSet.objects.all().order_by('release_date')
         self.assertEqual(
             response.context['object_list'][79],
             sorted_expansionsets[79]
