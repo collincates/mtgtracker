@@ -7,9 +7,6 @@
     <tbody>
     <tr>
       <td>
-        {% for card in set_cards %}
-        {{ card }}{{ card.mana_cost }},
-        {% endfor %}
         {% if expansionset.image_url %}<img src="{{ expansionset.image_url }}" alt="Image of card {{ expansionset.name }}">{% endif %}
       </td>
       <td>
@@ -27,6 +24,14 @@
         {% if expansionset.release_date %}<p><strong>Release Date:</strong> {{ expansionset.release_date }}</p>{% endif %}
         {% if expansionset.slug %}<p><strong>Slug:</strong> {{ expansionset.slug }}</p>{% endif %}
         {% if expansionset.type %}<p><strong>Type:</strong> {{ expansionset.type }}</p>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <td>
+
+        {% for card in set_cards %}
+        {{ card }}{{ card.mana_cost }},
+        {% endfor %}
       </td>
     </tr>
     </tbody>

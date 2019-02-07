@@ -20,14 +20,14 @@ Refer to `requirements/production.txt` for production-specific dependencies.
 
 <h3>Set up environment variables</h3>
 
-- Generate a `SECRET_KEY` by entering the code below into the command line. Save the `SECRET_KEY` (a string of random letters/numbers/symbols that will print to the command line), you'll need it in a second:
+- Generate a `MTG_SECRET_KEY` by entering the code below into the command line. Save the `MTG_SECRET_KEY` (a string of random letters/numbers/symbols that will print to the command line), you'll need it in a second:
 
   `python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
 
 - Open `env/bin/activate` and insert the following content on line 35/36:
   ```
   unset DJANGO_SETTINGS_MODULE
-  unset SECRET_KEY
+  unset MTG_SECRET_KEY
   unset PGDB_NAME
   unset PGDB_USER
   unset PGDB_PASS
@@ -39,7 +39,7 @@ Refer to `requirements/production.txt` for production-specific dependencies.
   34    fi
   35
   36    unset DJANGO_SETTINGS_MODULE
-  37    unset SECRET_KEY
+  37    unset MTG_SECRET_KEY
   38    unset PGDB_NAME
   39    unset PGDB_USER
   40    unset PGDB_PASS
@@ -50,7 +50,7 @@ Refer to `requirements/production.txt` for production-specific dependencies.
 
   ```
   export DJANGO_SETTINGS_MODULE="tome.settings.development"
-  export SECRET_KEY="replace_with_the_generated_secret_key_you_just_made"
+  export MTG_SECRET_KEY="replace_with_the_generated_secret_key_you_just_made"
   export PGDB_NAME="tome"
   export PGDB_USER="replace_this_with_the_username_you_set_in_psql"
   export PGDB_PASS="replace_this_with_the_password_you_set_in_psql"
