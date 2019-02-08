@@ -15,7 +15,11 @@ from db.models import Card
 
 @login_required
 def collection_create(request):
-    pass
+
+    context = {
+    }
+
+    return render(request, 'collection/collection_create.html', context=context)
 
 @login_required
 def collection_view(request, collection_name, user_name):

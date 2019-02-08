@@ -160,7 +160,6 @@ class ExpansionSetListViewTest(TestCase):
     # def test_expansionset_list_view_with_empty_queryset(self):
     #     self.queryset = None
     #     response = self.client.get(reverse('db:set_list'))
-    #     print(response.context)
     #     self.assertTrue(len(response.context['object_list'] == 0)
 
     def test_expansionset_list_view_pagination_is_one_hundred(self):
@@ -228,7 +227,6 @@ class ExpansionSetDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, expansion.name)
         self.assertEqual(response.context['expansionset'].name, 'Limited Edition 4')
-        # print(response.context[''])
 
     def test_expansionset_detail_view_set_release_date_on_detail_page(self):
         expansion = ExpansionSet.objects.get(id=4)
@@ -255,6 +253,6 @@ class ExpansionSetDetailViewTest(TestCase):
         expansion = ExpansionSet.objects.get(id=4)
         response = self.client.get(reverse('db:set_detail', args=[expansion.slug]))
         self.assertEqual(response.status_code, 200)
-        print(response.context)
         self.assertTrue(response.context['set_cards'])
         self.assertEqual(len(response.context['set_cards']), 2)
+        
