@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.utils.text import slugify
 
 from db.models import Card
 from deck.models import Deck
@@ -13,8 +14,17 @@ class Collection(models.Model):
         on_delete=models.CASCADE,
         related_name='collection'
     )
-    decks = models.ManyToManyField(Deck, through='CollectionDeck', related_name='collections')
-    cards = models.ManyToManyField(Card, through='CollectionCard', related_name='collections')
+    slug = models.SlugField(max_length=150)
+    decks = models.ManyToManyField(
+        Deck,
+        through='CollectionDeck',
+        related_name='collections'
+    )
+    cards = models.ManyToManyField(
+        Card,
+        through='CollectionCard',
+        related_name='collections'
+    )
 
     class Meta:
         ordering = ('name',)
@@ -23,6 +33,14 @@ class Collection(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        # Initial save to populate ID column
+        super(Collection, self).save(*args, **kwargs)
+        # Create a slug with format 'users-collection'
+        self.slug = slugify(f'{self.name}')
+        # Update slug field only
+        super(Collection, self).save(update_fields=['slug'])
 
     def get_absolute_url(self):
         return reverse('collection:collection_detail',
