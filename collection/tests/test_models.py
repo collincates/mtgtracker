@@ -1,7 +1,9 @@
 from django.test import TestCase
 
 from accounts.models import User
+from collection.models import Collection
 from db.models import Card, ExpansionSet
+from deck.models import Deck
 
 
 class CollectionModelTest(TestCase):
@@ -41,8 +43,24 @@ class CollectionModelTest(TestCase):
         collection = Collection.objects.get(name='testcollection1')
         self.assertEqual(collection.__str__(), collection.name)
 
+    def test_collection_override_save_with_slug(self):
+        # Collection class comes with a blank slug upon instantiation.
+        new_collection = Collection(
+            name='Test\'s collection',
+            id=3,
+            owner=User.objects.create_user(
+                username='testuser3',
+                password='987654321'
+            )
+        )
+        # Assert SlugField contains default blank value.
+        self.assertEqual(new_collection.slug, '')
+        # .save() is overriden to call slugify(f'{new_collection.name}')
+        new_collection.save()
+        self.assertEqual(new_collection.slug, 'tests-collection')
+
     def test_collection_get_absolute_url(self):
         user = User.objects.get(username='testuser1')
         collection = Collection.objects.get(name='testcollection1')
         collection_abs_url = collection.get_absolute_url()
-        self.assertEqual(collection_abs_url, '/db/testuser1/testcollection1/')
+        self.assertEqual(collection_abs_url, '/collection/testuser1/testcollection1/')
