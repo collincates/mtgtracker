@@ -1,15 +1,22 @@
 from django.test import TestCase
-from db.models import Collection
+from django.urls import reverse
+
+from accounts.models import User
+from collection.models import Collection, CollectionCard
+from db.models import Card
 
 
 class CollectionDetailViewTest(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='12345678')
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='12345678'
+        )
 
         self.login = self.client.login(
-            username=self.user.username,
-            password=self.user.password
+            username='testuser',
+            password='12345678'
         )
 
         collection = Collection.objects.create(
@@ -17,36 +24,59 @@ class CollectionDetailViewTest(TestCase):
             owner=self.user
             )
 
+    def test_collection_detail_view_redirect_if_not_logged_in(self):
+        # Log out user for this test
+        self.logout = self.client.logout()
+        collection = Collection.objects.get(name='testcollection')
+        response = self.client.get(reverse(
+            'collection:collection_detail',
+            kwargs={
+                'collection_slug': collection.slug,
+                'user_name': self.user.username
+            }
+        ))
+        self.assertRedirects(
+            response,
+            '/accounts/login/?next=/collection/testuser/testcollection/'
+        )
+
+    def test_collection_detail_view_logged_in_uses_correct_template(self):
+        collection = Collection.objects.get(name='testcollection')
+        response = self.client.get(reverse(
+            'collection:collection_detail',
+            kwargs={
+                'collection_slug': collection.slug,
+                'user_name': self.user.username
+            }
+        ))
+        # Check that user is logged in
+        self.assertEqual(str(response.context['user']), 'testuser')
+        # Check that we get a successful response
+        self.assertEqual(response.status_code, 200)
+        # Check that the correct template is being used
+        self.assertTemplateUsed(response, 'collection/collection_detail.html')
+
     def test_collection_detail_view_url_exists_at_desired_location(self):
         collection = Collection.objects.get(name='testcollection')
         response = self.client.get(collection.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.wsgi_request.path,
+            '/collection/testuser/testcollection/'
+        )
 
-    def test_collection_detail_view_url_accessible_by_collection_name_and_user_name(self):
+    def test_collection_detail_view_url_accessible_by_collection_slug_and_user_name(self):
         collection = Collection.objects.get(name='testcollection')
-        url = f'/db/testuser/testcollection/'
+        url = '/collection/testuser/testcollection/'
         response = self.client.get(reverse(
-            'collection_detail',
+            'collection:collection_detail',
             kwargs={
-                'collection_name': collection.name,
+                'collection_slug': collection.slug,
                 'user_name': self.user.username
                 }
             ))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['request'].path, url)
-
-    # def test_collection_detail_view_contains_collection_name_and_user_name(self):
-    #     collection = Collection.objects.get(name='testcollection')
-    #     response = self.client.get(reverse(
-    #         'collection_detail',
-    #         kwargs={
-    #             'collection_name': collection.name,
-    #             'user_name': self.user.username
-    #             }
-    #         ))
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.context[-1]['view'].context['collection_name'], 'collection_name')
-    #     # self.assertEqual(response.context[-1]['view'].collection_name, 'slug')
 
     def test_collection_detail_view_collection_name_on_detail_page(self):
         collection = Collection.objects.get(name='testcollection')

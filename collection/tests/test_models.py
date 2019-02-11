@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from accounts.models import User
 from collection.models import Collection, CollectionCard
-from db.models import Card, ExpansionSet
+from db.models import Card
 from deck.models import Deck
 
 
@@ -13,9 +13,6 @@ class CollectionModelTest(TestCase):
         """Create test user, log in test user, create collection for test user."""
         self.user1 = User.objects.create_user(username='testuser1', password='12345678')
         self.user2 = User.objects.create_user(username='testuser2', password='12345678')
-
-        self.login = self.client.login(username='testuser1', password='12345678')
-        self.login = self.client.login(username='testuser2', password='12345678')
 
         test_collection1 = Collection.objects.create(name='testcollection1', owner=self.user1)
         test_collection2 = Collection.objects.create(name='testcollection2', owner=self.user2)
