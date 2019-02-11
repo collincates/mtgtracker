@@ -95,10 +95,10 @@ class CollectionCardModelTest(TestCase):
 
     def test_collectioncard_meta_unique_together(self):
         """
-        A collection can only hold one instance of a given card's model.
-        Multiple copies of a card will instead be indicated in the 'count' field.
-        This test confirms that an IntegrityError is raised when a second
-        instance of an existing card model is added to a collection.
+        A CollectionCard can only relate to a given Card model once.
+        Multiple copies of a Card will instead be indicated in the 'count' field.
+        This test confirms that an IntegrityError is raised when an attempt
+        is made to form a second relationship with an already related card model.
         """
 
         collection = Collection.objects.get(name='testcollection')
@@ -107,7 +107,7 @@ class CollectionCardModelTest(TestCase):
             collection=collection,
             card=card1
         )
-        # Attempt to add the same card model instance again
+        # Attempt to relate the same card model a second time
         with self.assertRaises(IntegrityError):
             collectioncard_1_duplicate = CollectionCard.objects.create(
                 collection=collection,

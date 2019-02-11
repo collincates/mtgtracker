@@ -6,6 +6,11 @@ from collection.models import Collection, CollectionCard
 from db.models import Card
 
 
+class CollectionCreateViewTest(TestCase):
+    def test_set_this_up(self):
+        self.assertTrue(False)
+
+
 class CollectionDetailViewTest(TestCase):
 
     def setUp(self):
@@ -94,26 +99,167 @@ class CollectionDetailViewTest(TestCase):
 
 
 class AddCardToCollectionViewTest(TestCase):
-    pass
-    # self.testuser = User.objects.create_user(username='testuser', password='12345678')
-    # self.login = self.client.login(username='testuser', password='12345678')
 
-    # card2 = Card.objects.create(name='Card 2', set_name='a test set', id=2, sdk_id='456')
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='12345678'
+        )
+        self.login = self.client.login(
+            username='testuser',
+            password='12345678'
+        )
+        collection = Collection.objects.create(
+            name='testcollection',
+            owner=self.user
+        )
+        card1 = Card.objects.create(
+            name='Card 1',
+            set_name='a test set',
+            id=1,
+            sdk_id='123'
+        )
+        card2 = Card.objects.create(
+            name='Card 2',
+            set_name='a test set',
+            id=2,
+            sdk_id='456'
+        )
 
-    # collectioncard_2 = CollectionCard.objects.create(
-    #     collection=collection,
-    #     card=card2
-    # )
+        collectioncard_3_count = CollectionCard.objects.create(
+            collection=collection,
+            card=card2,
+            count=3
+        )
 
-    # def test_collectioncard_add_card_to_collection(self):
-    #     test_collection = Collection.objects.get(name='testcollection')
-    #     card1 = Card.objects.get(name='Card 1')
-    #     test_collection.cards.add(card1)
-    #     print(test_collection.cards)
-    # test add duplicate card
+    def test_add_card_to_collection_view_redirects_to_collection_detail(self):
+        collection = Collection.objects.get(name='testcollection')
+        card1 = Card.objects.get(name='Card 1')
+        response = self.client.get(reverse(
+            'collection:collection_add',
+            kwargs={
+                'card_id': card1.id
+            }
+        ))
+        self.assertRedirects(
+            response,
+            '/collection/testuser/testcollection/'
+        )
+
+    def test_add_card_to_collection_view_add_new_card(self):
+        collection = Collection.objects.get(name='testcollection')
+        card1 = Card.objects.get(name='Card 1')
+        response = self.client.get(reverse(
+            'collection:collection_add',
+            kwargs={
+                'card_id': card1.id
+            }
+        ))
+        self.assertEqual(response.status_code, 302)
+        card_count = CollectionCard.objects.get(
+            collection=collection,
+            card=card1
+        ).count
+        self.assertEqual(card_count, 1)
+
+    def test_add_card_to_collection_view_add_existing_card(self):
+        collection = Collection.objects.get(name='testcollection')
+        card2 = Card.objects.get(name='Card 2')
+        response = self.client.get(reverse(
+            'collection:collection_add',
+            kwargs={
+                'card_id': card2.id
+            }
+        ))
+        self.assertEqual(response.status_code, 302)
+        card_count = CollectionCard.objects.get(
+            collection=collection,
+            card=card2
+        ).count
+        self.assertEqual(card_count, 4)
 
 
 class RemoveCardFromCollectionViewTest(TestCase):
-    pass
-    # test remove card
-    # test remove card to zero qty, what happens?
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='12345678'
+        )
+        self.login = self.client.login(
+            username='testuser',
+            password='12345678'
+        )
+        collection = Collection.objects.create(
+            name='testcollection',
+            owner=self.user
+        )
+        card1 = Card.objects.create(
+            name='Card 1',
+            set_name='a test set',
+            id=1,
+            sdk_id='123'
+        )
+        card2 = Card.objects.create(
+            name='Card 2',
+            set_name='a test set',
+            id=2,
+            sdk_id='456'
+        )
+        collectioncard_1_count = CollectionCard.objects.create(
+            collection=collection,
+            card=card1,
+            count=1
+        )
+        collectioncard_4_count = CollectionCard.objects.create(
+            collection=collection,
+            card=card2,
+            count=4
+        )
+
+    def test_remove_card_from_collection_view_redirects_to_collection_detail(self):
+        collection = Collection.objects.get(name='testcollection')
+        card1 = Card.objects.get(name='Card 1')
+        response = self.client.get(reverse(
+            'collection:collection_remove',
+            kwargs={
+                'card_id': card1.id
+            }
+        ))
+        self.assertRedirects(
+            response,
+            '/collection/testuser/testcollection/'
+        )
+
+    def test_remove_card_from_collection_view_remove_one_card_with_some_remaining(self):
+        collection = Collection.objects.get(name='testcollection')
+        card2 = Card.objects.get(name='Card 2')
+        response = self.client.get(reverse(
+            'collection:collection_remove',
+            kwargs={
+                'card_id': card2.id
+            }
+        ))
+        self.assertEqual(response.status_code, 302)
+        card_count = CollectionCard.objects.get(
+            collection=collection,
+            card=card2
+        ).count
+        self.assertEqual(card_count, 3)
+
+    def test_remove_card_from_collection_view_remove_one_card_with_none_remaining(self):
+        """When card count is reduced to zero, the CollectionCard is deleted."""
+        collection = Collection.objects.get(name='testcollection')
+        card1 = Card.objects.get(name='Card 1')
+        response = self.client.get(reverse(
+            'collection:collection_remove',
+            kwargs={
+                'card_id': card1.id
+            }
+        ))
+        self.assertEqual(response.status_code, 302)
+        with self.assertRaises(CollectionCard.DoesNotExist):
+            card_count = CollectionCard.objects.get(
+                collection=collection,
+                card=card1
+            ).count
