@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import F
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -32,24 +33,16 @@ def collection_detail(request, collection_slug, user_name):
 def add_card_to_collection(request, card_id):
     card = get_object_or_404(Card, id=card_id)
 
-    try:
-        collectioncard = CollectionCard.objects.get(
-                       collection_id=request.user.collection.id,
-                       card_id=card.id
-                       )
+    collectioncard, created = CollectionCard.objects.get_or_create(
+                   collection_id=request.user.collection.id,
+                   card_id=card.id
+                   )
 
-        collectioncard.count += 1
-        collectioncard.save()
-
-    except CollectionCard.DoesNotExist:
-        collectioncard = CollectionCard.objects.create(
-                       collection_id=request.user.collection.id,
-                       card_id=card.id,
-                       count=1
-                       )
+    collectioncard.count = F('count') + 1
+    collectioncard.save()
 
     return redirect(reverse(
-        'collection:collection_view',
+        'collection:collection_detail',
         kwargs={
             'collection_slug': request.user.collection.slug,
             'user_name': request.user,
@@ -66,13 +59,13 @@ def remove_card_from_collection(request, card_id):
                    )
 
     if collectioncard.count > 1:
-        collectioncard.count -= 1
+        collectioncard.count = F('count') - 1
         collectioncard.save()
     else:
         collectioncard.delete()
 
     return redirect(reverse(
-        'collection:collection_view',
+        'collection:collection_detail',
         kwargs={
             'collection_slug': request.user.collection.slug,
             'user_name': request.user,

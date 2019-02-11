@@ -61,3 +61,29 @@ class CollectionDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, collection.owner)
         self.assertEqual(response.context['collection'].owner, self.user)
+
+
+class AddCardToCollectionViewTest(TestCase):
+    pass
+    # self.testuser = User.objects.create_user(username='testuser', password='12345678')
+    # self.login = self.client.login(username='testuser', password='12345678')
+
+    # card2 = Card.objects.create(name='Card 2', set_name='a test set', id=2, sdk_id='456')
+
+    # collectioncard_2 = CollectionCard.objects.create(
+    #     collection=collection,
+    #     card=card2
+    # )
+
+    # def test_collectioncard_add_card_to_collection(self):
+    #     test_collection = Collection.objects.get(name='testcollection')
+    #     card1 = Card.objects.get(name='Card 1')
+    #     test_collection.cards.add(card1)
+    #     print(test_collection.cards)
+    # test add duplicate card
+
+
+class RemoveCardFromCollectionViewTest(TestCase):
+    pass
+    # test remove card
+    # test remove card to zero qty, what happens?

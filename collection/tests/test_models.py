@@ -1,7 +1,8 @@
+from django.db.utils import IntegrityError
 from django.test import TestCase
 
 from accounts.models import User
-from collection.models import Collection
+from collection.models import Collection, CollectionCard
 from db.models import Card, ExpansionSet
 from deck.models import Deck
 
@@ -64,3 +65,63 @@ class CollectionModelTest(TestCase):
         collection = Collection.objects.get(name='testcollection1')
         collection_abs_url = collection.get_absolute_url()
         self.assertEqual(collection_abs_url, '/collection/testuser1/testcollection1/')
+
+
+class CollectionCardModelTest(TestCase):
+
+    def setUp(self):
+        """
+        Create Collection and Card to be used in creation of CollectionCard
+        model instance.
+
+        CollectionCard is a ManyToManyField 'through-model'.
+        It requires both a Collection and a Card object in order to create
+        a row on the CollectionCard table. The 'count' field defaults to 0 (int).
+
+        A Collection object requires a value in the 'owner' field, so we create
+        a test user for this set of tests and assign the collection to test user.
+        """
+        testuser = User.objects.create_user(username='testuser', password='12345678')
+
+        collection = Collection.objects.create(name='testcollection', owner=testuser)
+
+        card1 = Card.objects.create(name='Card 1', set_name='a test set', id=1, sdk_id='123')
+
+    def test_collectioncard_count_field_default_is_zero(self):
+        collection = Collection.objects.get(name='testcollection')
+        card1 = Card.objects.get(name='Card 1')
+        collectioncard_1 = CollectionCard.objects.create(
+            collection=collection,
+            card=card1
+        )
+        self.assertEqual(collectioncard_1.count, 0)
+
+    def test_collectioncard_meta_unique_together(self):
+        """
+        A collection can only hold one instance of a given card's model.
+        Multiple copies of a card will instead be indicated in the 'count' field.
+        This test confirms that an IntegrityError is raised when a second
+        instance of an existing card model is added to a collection.
+        """
+
+        collection = Collection.objects.get(name='testcollection')
+        card1 = Card.objects.get(name='Card 1')
+        collectioncard_1 = CollectionCard.objects.create(
+            collection=collection,
+            card=card1
+        )
+        # Attempt to add the same card model instance again
+        with self.assertRaises(IntegrityError):
+            collectioncard_1_duplicate = CollectionCard.objects.create(
+                collection=collection,
+                card=card1
+            )
+
+    def test_collectioncard_str_method(self):
+        collection = Collection.objects.get(name='testcollection')
+        card1 = Card.objects.get(name='Card 1')
+        collectioncard_1 = CollectionCard.objects.create(
+            collection=collection,
+            card=card1
+        )
+        self.assertEqual(collectioncard_1.__str__(), 'Card 1')

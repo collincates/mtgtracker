@@ -51,6 +51,28 @@ class Collection(models.Model):
         )
 
 
+class CollectionCard(models.Model):
+    collection = models.ForeignKey(
+        Collection,
+        on_delete=models.CASCADE,
+        related_name='collectioncards'
+    )
+
+    card = models.ForeignKey(
+        Card,
+        on_delete=models.CASCADE,
+        related_name='collectioncards'
+    )
+
+    count = models.PositiveIntegerField(default=0)
+        #What about land cards?
+    class Meta:
+        unique_together = ('card', 'collection',)
+
+    def __str__(self):
+        return self.card.name
+
+
 class CollectionDeck(models.Model):
     collection = models.ForeignKey(
         Collection,
@@ -70,25 +92,3 @@ class CollectionDeck(models.Model):
 
     def __str__(self):
         return self.deck.name
-
-
-class CollectionCard(models.Model):
-    collection = models.ForeignKey(
-        Collection,
-        on_delete=models.CASCADE,
-        related_name='collectioncards'
-    )
-
-    card = models.ForeignKey(
-        Card,
-        on_delete=models.CASCADE,
-        related_name='collectioncards'
-    )
-
-    count = models.PositiveIntegerField()
-        #What about land cards?
-    class Meta:
-        unique_together = ('card', 'collection',)
-
-    def __str__(self):
-        return self.card.name
