@@ -19,7 +19,7 @@
         {% if card.text %}<p><strong>Card Text:</strong> {{ card.text }}</p>{% endif %}
         {% if card.flavor %}<p><strong>Flavor Text:</strong> {{ card.flavor }}</p>{% endif %}
         {% if card.power and card.toughness %}<p><strong>P/T:</strong> {{ card.power }}/{{ card.toughness }}</p>{% endif %}
-        {% if card.set_name %}<p><strong>Expansion:</strong> <a href="{% url 'db:card_list' %}">{{ card.set_name }}</a></p>{% endif %}
+        {% if card.set_name %}<p><strong>Expansion:</strong> <a href="{% url 'db:set_detail' set_slug=set_slug %}">{{ card.set_name }}</a></p>{% endif %}
         {% if card.rarity %}<p><strong>Rarity:</strong> {{ card.rarity }}</p>{% endif %}
         {% if card.printings %}<p><strong>All Sets:</strong> {% for printing in card.printings %} {{ printing }} {% endfor %} </p>{% endif %}
         {% if card.number %}<p><strong>Card Number:</strong> {{ card.number }}</p>{% endif %}

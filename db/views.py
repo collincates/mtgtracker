@@ -47,8 +47,12 @@ class CardDetailView(generic.DetailView):
         return get_object_or_404(
             Card,
             slug=self.kwargs['card_slug'],
-            # set_name=self.kwargs['set_slug'],
             )
+
+    def get_context_data(self, **kwargs):
+        context = super(CardDetailView, self).get_context_data(**kwargs)
+        context['set_slug'] = ExpansionSet.objects.get(code=self.object.set).slug
+        return context
 
 
 class ExpansionSetListView(generic.ListView):
