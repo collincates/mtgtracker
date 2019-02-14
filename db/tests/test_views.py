@@ -115,6 +115,13 @@ class CardDetailViewTest(TestCase):
         self.assertContains(response, card.name)
         self.assertEqual(response.context['card'].sdk_id, 'test sdk_id')
 
+    def test_card_detail_view_card_set_slug_in_context(self):
+        card = Card.objects.get(id=1)
+        response = self.client.get(reverse('db:card_detail', args=[card.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response.context, set_slug)
+        self.assertEqual(response.context['set_slug'], 'a-test-set')
+
 
 class ExpansionSetListViewTest(TestCase):
 
@@ -255,4 +262,3 @@ class ExpansionSetDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['set_cards'])
         self.assertEqual(len(response.context['set_cards']), 2)
-        
