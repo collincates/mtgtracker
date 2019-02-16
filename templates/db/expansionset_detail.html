@@ -30,7 +30,7 @@
       <td>
 
         {% for card in set_cards %}
-        {{ card }}{{ card.mana_cost }},
+        <p><a href="{% url 'db:card_detail' card_slug=card.slug %}">{{ card }}</a></p>
         {% endfor %}
       </td>
     </tr>

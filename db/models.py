@@ -71,6 +71,18 @@ class Card(models.Model):
                 sdk_id__in=[self.sdk_id, *self.variations]
                 ).values_list('slug', flat=True).order_by('id')
 
+    def all_printings(self):
+        return Card.objects.filter(
+            name=self.name,
+            set__in=self.printings
+            )
+
+    def other_printings(self):
+        return Card.objects.filter(
+            name=self.name,
+            set__in=self.printings
+            ).exclude(id=self.id)
+
 
 class ExpansionSet(models.Model):
     booster = JSONField(null=True)

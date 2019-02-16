@@ -11,22 +11,42 @@ class CardModelTest(TestCase):
     def setUp(cls):
         card1 = Card.objects.create(
             name='Card 1',
+            set='AT1',
             set_name='a test set',
             id=1,
             sdk_id='123'
         )
         card2 = Card.objects.create(
             name='Card 2',
-            set_name='a test set',
+            set='AT2',
+            set_name='a test set 2',
             id=2,
             sdk_id='456'
         )
         card3 = Card.objects.create(
             name='Card 3',
-            set_name='a test set',
+            set='AT3',
+            set_name='a test set 3',
             id=3,
             sdk_id='789',
-            variations=[card1.sdk_id, card2.sdk_id]
+            variations=[card1.sdk_id, card2.sdk_id],
+            printings=['AT3', 'AT4', 'AT5']
+        )
+        card3_set_AT4 = Card.objects.create(
+            name='Card 3',
+            set='AT4',
+            set_name='a test set 4',
+            id=4,
+            sdk_id='101',
+            printings=['AT3', 'AT4', 'AT5']
+        )
+        card3_set_AT5 = Card.objects.create(
+            name='Card 3',
+            set='AT5',
+            set_name='a test set 5',
+            id=5,
+            sdk_id='112',
+            printings=['AT3', 'AT4', 'AT5']
         )
 
     def test_card_meta_verbose_name(self):
@@ -66,6 +86,23 @@ class CardModelTest(TestCase):
             art_var,
             map(repr, ['1-card-1', '2-card-2', '3-card-3'])
         )
+
+    def test_card_all_printings(self):
+        card3 = Card.objects.get(id=3)
+        all_sets = card3.all_printings()
+        self.assertQuerysetEqual(
+            all_sets,
+            ['<Card: Card 3>', '<Card: Card 3>', '<Card: Card 3>']
+        )
+
+    def test_card_other_printings(self):
+        card3 = Card.objects.get(id=3)
+        all_sets = card3.other_printings()
+        self.assertQuerysetEqual(
+            all_sets,
+            ['<Card: Card 3>', '<Card: Card 3>']
+        )
+
 
 class ExpansionSetModelTest(TestCase):
 
