@@ -34,16 +34,20 @@
           <div class="carditemset">
             <a href="">{{ card.set }}</a>
           </div>
+          {% if card.other_printings %}
           <div>
             <div>
               <p>Other Versions</p>
             </div>
             <div>
-              {% for printing in card.printings %}
-                {{ printing }}
+              {% for card in card.other_printings %}
+                <a href="{% url 'db:card_detail' card_slug=card.slug %}">
+                  {{ card.set }}
+                </a>
               {% endfor %}
             </div>
-        </div>
+          </div>
+          {% endif %}
         </div>
       </td>
     </tr>
