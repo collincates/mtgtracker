@@ -28,7 +28,7 @@ class Card(models.Model):
     power = models.CharField(max_length=10, null=True)
     printings = ArrayField(models.CharField(max_length=10), null=True)
     rarity = models.CharField(max_length=50)
-    release_date = models.DateField(null=True)
+    release_date = models.DateField(max_length=10, null=True)
     rulings = JSONField(null=True)
     sdk_id = models.CharField(max_length=64, unique=True) #This is referred to as `id` in the SDK.
     set = models.CharField(max_length=10)
@@ -96,10 +96,10 @@ class ExpansionSet(models.Model):
     name = models.CharField(max_length=255)
     old_code = models.CharField(max_length=10, null=True)
     online_only = models.BooleanField(null=True)
-    release_date = models.CharField(max_length=10)
+    release_date = models.DateField(max_length=10)
     slug = models.SlugField(max_length=150, null=False, unique=True)
     type = models.CharField(max_length=50, null=True)
-    # 
+    #
     # cards = models.ManyToManyField(
     #     Card,
     #     through='ExpansionSetCard',

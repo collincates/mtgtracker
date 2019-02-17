@@ -78,15 +78,13 @@ Refer to `requirements/production.txt` for production-specific dependencies.
 
 <h3>Migrate the database schema and load in card data</h3>
 
-- Make migrations with `python3 manage.py makemigrations`
-
 - Migrate the schema with `python manage.py migrate`
 
 - Enter the following on the command line to populate the database with all card data from the [MTG SDK](https://github.com/MagicTheGathering/mtg-sdk-python "MTG SDK Github"). This might take several minutes, so go play a quick game of Magic.
 
-  `python manage.py update_db_card_database`
+  `python manage.py update_card_set_database`
 
-- When `update_db_card_database` has finished, you will see an `Update successful` message on the command line indicating a successful transfer. __If you see an error message instead, please submit a new issue!__
+- When `update_card_set_database` has finished, you will see an `Update successful` message on the command line indicating a successful transfer. __If you see an error message instead, please submit a new issue!__
 
 <h3>Create a Django superuser and run the server</h3>
 

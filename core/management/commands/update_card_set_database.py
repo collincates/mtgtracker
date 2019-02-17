@@ -1,3 +1,10 @@
+import logging
+
+logging.basicConfig(
+    filename="test.log",
+    level=logging.DEBUG,
+)
+
 from django.core.management.base import BaseCommand
 # Alias these to avoid namespace conflicts
 from mtgsdk import Card as SDKCard
@@ -6,13 +13,12 @@ from db.models import Card as Card
 from db.models import ExpansionSet
 
 
-
-def progress(count, total, status=''):
-    bar_len = 60
-    filled_len = int(round(bar_len * count / float(total)))
-    percents = round(100.0 * count / float(total), 1)
-    bar = '#' * filled_len + '-' * (bar_len - filled_len)
-    sys.stdout.write(f'bar, percents, "%", status')
+# def progress(count, total, status=''):
+#     bar_len = 60
+#     filled_len = int(round(bar_len * count / float(total)))
+#     percents = round(100.0 * count / float(total), 1)
+#     bar = '#' * filled_len + '-' * (bar_len - filled_len)
+#     sys.stdout.write(f'bar, percents, "%", status')
 
 
 class Command(BaseCommand):
@@ -32,6 +38,7 @@ class Command(BaseCommand):
         super(Command, self).__init__()
         self.cards = []
         self.sets = []
+        self.errors = []
 
     def handle(self, *args, **kwargs):
         self.stdout.write('Paginating through the MTGSDK to grab card data.')
@@ -40,7 +47,7 @@ class Command(BaseCommand):
         self._update_or_create_set_model_objects()
         self._validate_set_update()
         self._get_all_cards()
-        self._change_card_id_field_name()
+        self._change_card_id_release_date_field_names()
         self._update_or_create_card_model_objects()
         self._validate_card_update()
 
@@ -97,12 +104,18 @@ class Command(BaseCommand):
         """
 
         # What logic to use to check the **actual** last page instead of 600?
-        for i in range(1, 600):
-            self.cards.extend(SDKCard.where(page=i).all())
-            self.stdout.write(f'Got page {i}')
+        current_page_index = 1
+        while True:
+        # for i in range(19):
+            current_page = SDKCard.where(page=current_page_index).all()
+            if len(current_page) == 0:
+                return False
+            self.cards.extend(current_page)
+            self.stdout.write(f'Got page {current_page_index}')
+            current_page_index += 1
         self.stdout.write(f'Grabbed {len(self.cards)} cards.')
 
-    def _change_card_id_field_name(self):
+    def _change_card_id_release_date_field_names(self):
         """
         MTGSDK contains a UUID in a column named 'id' for each card in the SDK.
         This method reassigns the column named 'id' to a column named 'sdk_id'.
@@ -124,10 +137,49 @@ class Command(BaseCommand):
         Django Model's create() method without error, while retaining
         the intended functionality of Django's AutoField column 'id'
         which acts as an auto-incrementing primary key.
+
+        This method also populates the Card object's 'release_date' field
+        with a datetime.date pulled from the Card's corresponding ExpansionSet.
         """
+
+        count = 0
         for card in self.cards:
+            # Change 'id' field to 'sdk_id'
             card.__dict__['sdk_id'] = card.__dict__.pop('id')
-            self.stdout.write(f'changed {self.cards.index(card)}')
+            # Adjust Archenemy cards.set from 'OARC' to 'ARC'
+            if card.set == 'OARC':
+                card.__dict__['set'] = 'ARC'
+            # Adjust Archenemy: Nicol Bolas cards.set from 'OE01' to 'E01'
+            if card.set == 'OE01':
+                card.__dict__['set'] = 'E01'
+            # Adjust Planechase cards.set from 'OHOP' to 'HOP'
+            if card.set == 'OHOP':
+                card.__dict__['set'] = 'HOP'
+            # Adjust Planechase 2012 cards.set from 'OPC2' to 'PC2'
+            if card.set == 'OPC2':
+                card.__dict__['set'] = 'PC2'
+            # Adjust Planechase Anthology Planes cards.set from 'OPCA' to 'PCA'
+            if card.set == 'OPCA':
+                card.__dict__['set'] = 'PCA'
+            # Adjust Ravnica Allegiance Promos cards.set from 'PRN' to 'PRNA'
+            if card.set == 'PRN':
+                card.__dict__['set'] = 'PRNA'
+            # Set 'Nalathni Dragon' release_date manually to match 'PDRC' date
+            if card.set == 'PRED':
+                card.__dict__['release_date'] = '1994-01-01'
+                count += 1
+            # Populate 'release_date' field with value from corresponding set
+            if not card.release_date:
+                try:
+                    set_release_date = next(
+                        set.release_date for set in self.sets if card.set == set.code
+                    )
+                except:
+                    self.errors.append((card.name, card.set, card.set_name))
+                    continue
+                card.__dict__['release_date'] = set_release_date
+                count += 1
+        self.stdout.write(f'Changed {count} cards\' \'id\' and \'release_date\' fields.')
 
     def _update_or_create_card_model_objects(self):
         """
@@ -137,6 +189,9 @@ class Command(BaseCommand):
         If card information already exists in db_card table,
         perform update() instead of create().
         """
+
+        # Sort all cards by release_date earliest first, then alphabetically.
+        self.cards.sort(key=lambda x: (x.release_date, x.set, x.name))
 
         for card in self.cards:
             this_card, created = Card.objects.update_or_create(
@@ -159,6 +214,8 @@ class Command(BaseCommand):
         if sdkcards_all != cards_all:
             self.stdout.write(self.style.ERROR('***There was a problem.***'))
             self.stdout.write(self.style.ERROR(f'{sdkcards_all - cards_all} cards were not inserted into the database.'))
+            print(f'There are errors with the following cards: {self.errors}')
             #Also return name, set_name, sdk_id of missing cards.
         else:
             self.stdout.write(self.style.SUCCESS(f'Update successful. There are now {cards_all} unique cards in the database.'))
+            print(f'There are errors with the following cards: {self.errors}')
