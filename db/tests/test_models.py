@@ -7,32 +7,31 @@ from db.models import Card, ExpansionSet
 
 class CardModelTest(TestCase):
 
-    @classmethod
-    def setUp(cls):
-        card1 = Card.objects.create(
+    def setUp(self):
+        self.card1 = Card.objects.create(
             name='Card 1',
             set='AT1',
             set_name='a test set',
             id=1,
             sdk_id='123'
         )
-        card2 = Card.objects.create(
+        self.card2 = Card.objects.create(
             name='Card 2',
             set='AT2',
             set_name='a test set 2',
             id=2,
             sdk_id='456'
         )
-        card3 = Card.objects.create(
+        self.card3 = Card.objects.create(
             name='Card 3',
             set='AT3',
             set_name='a test set 3',
             id=3,
             sdk_id='789',
-            variations=[card1.sdk_id, card2.sdk_id],
+            variations=[self.card1.sdk_id, self.card2.sdk_id],
             printings=['AT3', 'AT4', 'AT5']
         )
-        card3_set_AT4 = Card.objects.create(
+        self.card3_set_AT4 = Card.objects.create(
             name='Card 3',
             set='AT4',
             set_name='a test set 4',
@@ -40,7 +39,7 @@ class CardModelTest(TestCase):
             sdk_id='101',
             printings=['AT3', 'AT4', 'AT5']
         )
-        card3_set_AT5 = Card.objects.create(
+        self.card3_set_AT5 = Card.objects.create(
             name='Card 3',
             set='AT5',
             set_name='a test set 5',
@@ -62,8 +61,7 @@ class CardModelTest(TestCase):
         self.assertEqual(results[2].name, 'Card 3')
 
     def test_card_string_representation(self):
-        card = Card.objects.get(id=1)
-        self.assertEqual(card.__str__(), card.name)
+        self.assertEqual(self.card1.__str__(), self.card1.name)
 
     def test_card_override_save_with_slug(self):
         # Card class comes with a blank slug upon instantiation by default.
@@ -75,29 +73,26 @@ class CardModelTest(TestCase):
         self.assertEqual(card.slug, '234-my-test-card')
 
     def test_card_get_absolute_url(self):
-        card = Card.objects.get(id=1)
-        card_abs_url = card.get_absolute_url()
+        # card = Card.objects.get(id=1)
+        card_abs_url = self.card1.get_absolute_url()
         self.assertEqual(card_abs_url, '/db/card/1-card-1')
 
     def test_card_art_variations(self):
-        card3 = Card.objects.get(id=3)
-        art_var = card3.art_variations()
+        art_var = self.card3.art_variations()
         self.assertQuerysetEqual(
             art_var,
             map(repr, ['1-card-1', '2-card-2', '3-card-3'])
         )
 
     def test_card_all_printings(self):
-        card3 = Card.objects.get(id=3)
-        all_sets = card3.all_printings()
+        all_sets = self.card3.all_printings()
         self.assertQuerysetEqual(
             all_sets,
             ['<Card: Card 3>', '<Card: Card 3>', '<Card: Card 3>']
         )
 
     def test_card_other_printings(self):
-        card3 = Card.objects.get(id=3)
-        all_sets = card3.other_printings()
+        all_sets = self.card3.other_printings()
         self.assertQuerysetEqual(
             all_sets,
             ['<Card: Card 3>', '<Card: Card 3>']
@@ -106,21 +101,20 @@ class CardModelTest(TestCase):
 
 class ExpansionSetModelTest(TestCase):
 
-    @classmethod
-    def setUp(cls):
-        alpha = ExpansionSet.objects.create(
+    def setUp(self):
+        self.alpha = ExpansionSet.objects.create(
             name='Limited Edition Alpha',
             code='LEA',
             id=1,
             release_date='1993-08-05',
             )
-        beta = ExpansionSet.objects.create(
+        self.beta = ExpansionSet.objects.create(
             name='Limited Edition Beta',
             code='LEB',
             id=2,
             release_date='1993-10-04',
             )
-        unlimited = ExpansionSet.objects.create(
+        self.unlimited = ExpansionSet.objects.create(
             name='Unlimited Edition',
             code='2ED',
             id=3,
@@ -140,8 +134,7 @@ class ExpansionSetModelTest(TestCase):
         self.assertEqual(ExpansionSet._meta.verbose_name_plural, 'sets')
 
     def test_expansionset_string_representation(self):
-        expansionset = ExpansionSet.objects.get(id=1)
-        self.assertEqual(expansionset.__str__(), expansionset.name)
+        self.assertEqual(self.alpha.__str__(), self.alpha.name)
 
     def test_expansionset_override_save_with_slug(self):
         # ExpansionSet class comes with a blank slug upon instantiation.
@@ -153,6 +146,5 @@ class ExpansionSetModelTest(TestCase):
         self.assertEqual(expansionset.slug, 'test-expansion-set')
 
     def test_expansionset_get_absolute_url(self):
-        expansionset = ExpansionSet.objects.get(id=3)
-        expansionset_abs_url = expansionset.get_absolute_url()
+        expansionset_abs_url = self.unlimited.get_absolute_url()
         self.assertEqual(expansionset_abs_url, '/db/expansion/unlimited-edition')

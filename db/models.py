@@ -99,6 +99,12 @@ class ExpansionSet(models.Model):
     release_date = models.CharField(max_length=10)
     slug = models.SlugField(max_length=150, null=False, unique=True)
     type = models.CharField(max_length=50, null=True)
+    # 
+    # cards = models.ManyToManyField(
+    #     Card,
+    #     through='ExpansionSetCard',
+    #     related_name='expansionsets'
+    # )
 
     class Meta:
         ordering = ('release_date',)
@@ -121,3 +127,23 @@ class ExpansionSet(models.Model):
 
     # def generate_random_booster(self):
     #     pass
+
+
+class ExpansionSetCard(models.Model):
+    expansionset = models.ForeignKey(
+        ExpansionSet,
+        on_delete=models.CASCADE,
+        related_name='expansionsetcards'
+    )
+
+    card = models.ForeignKey(
+        Card,
+        on_delete=models.CASCADE,
+        related_name='expansionsetcards'
+    )
+
+    class Meta:
+        unique_together = ('card', 'expansionset',)
+
+    def __str__(self):
+        return self.card.name

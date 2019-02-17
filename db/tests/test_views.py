@@ -67,7 +67,7 @@ class CardListViewTest(TestCase):
 class CardDetailViewTest(TestCase):
 
     def setUp(self):
-        card = Card.objects.create(
+        self.card = Card.objects.create(
             name=f'Test Card',
             set_name='a test set',
             id=1,
@@ -75,49 +75,42 @@ class CardDetailViewTest(TestCase):
         )
 
     def test_card_detail_view_url_exists_at_desired_location(self):
-        card = Card.objects.get(id=1)
-        response = self.client.get(card.get_absolute_url())
+        response = self.client.get(self.card.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_card_detail_view_url_accessible_by_name_with_slug_argument(self):
-        card = Card.objects.get(id=1)
-        response = self.client.get(reverse('db:card_detail', args=[card.slug]))
+        response = self.client.get(reverse('db:card_detail', args=[self.card.slug]))
         self.assertEqual(response.status_code, 200)
 
     def test_card_detail_view_contains_custom_slug_field(self):
-        card = Card.objects.get(id=1)
         response = self.client.get(reverse(
             'db:card_detail',
             kwargs={
-                'card_slug': card.slug,
+                'card_slug': self.card.slug,
             }
         ))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context[-1]['view'].slug_field, 'slug')
 
     def test_card_detail_view_contains_custom_slug_url_kwarg(self):
-        card = Card.objects.get(id=1)
-        response = self.client.get(reverse('db:card_detail', args=[card.slug]))
+        response = self.client.get(reverse('db:card_detail', args=[self.card.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context[-1]['view'].slug_url_kwarg, 'slug')
 
     def test_card_detail_view_card_name_on_detail_page(self):
-        card = Card.objects.get(id=1)
-        response = self.client.get(reverse('db:card_detail', args=[card.slug]))
+        response = self.client.get(reverse('db:card_detail', args=[self.card.slug]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, card.name)
+        self.assertContains(response, self.card.name)
         self.assertEqual(response.context['card'].name, 'Test Card')
 
     def test_card_detail_view_card_sdk_id_on_detail_page(self):
-        card = Card.objects.get(id=1)
-        response = self.client.get(reverse('db:card_detail', args=[card.slug]))
+        response = self.client.get(reverse('db:card_detail', args=[self.card.slug]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, card.name)
+        self.assertContains(response, self.card.name)
         self.assertEqual(response.context['card'].sdk_id, 'test sdk_id')
 
     def test_card_detail_view_card_set_slug_in_context(self):
-        card = Card.objects.get(id=1)
-        response = self.client.get(reverse('db:card_detail', args=[card.slug]))
+        response = self.client.get(reverse('db:card_detail', args=[self.card.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response.context, set_slug)
         self.assertEqual(response.context['set_slug'], 'a-test-set')
@@ -194,7 +187,7 @@ class ExpansionSetListViewTest(TestCase):
 class ExpansionSetDetailViewTest(TestCase):
 
     def setUp(self):
-        expansion = ExpansionSet.objects.create(
+        self.expansion = ExpansionSet.objects.create(
             id=4,
             code='LE4',
             name='Limited Edition 4',
@@ -202,44 +195,38 @@ class ExpansionSetDetailViewTest(TestCase):
         )
 
     def test_expansionset_detail_view_url_exists_at_desired_location(self):
-        expansion = ExpansionSet.objects.get(id=4)
-        response = self.client.get(expansion.get_absolute_url())
+        response = self.client.get(self.expansion.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
     def test_expansionset_detail_view_url_accessible_by_name_with_slug_argument(self):
-        expansion = ExpansionSet.objects.get(id=4)
-        response = self.client.get(reverse('db:set_detail', args=[expansion.slug]))
+        response = self.client.get(reverse('db:set_detail', args=[self.expansion.slug]))
         self.assertEqual(response.status_code, 200)
 
     def test_expansionset_detail_view_contains_custom_slug_field(self):
-        expansion = ExpansionSet.objects.get(id=4)
         response = self.client.get(reverse(
             'db:set_detail',
             kwargs={
-                'set_slug': expansion.slug,
+                'set_slug': self.expansion.slug,
             }
         ))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context[-1]['view'].slug_field, 'slug')
 
     def test_expansionset_detail_view_contains_custom_slug_url_kwarg(self):
-        expansion = ExpansionSet.objects.get(id=4)
-        response = self.client.get(reverse('db:set_detail', args=[expansion.slug]))
+        response = self.client.get(reverse('db:set_detail', args=[self.expansion.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context[-1]['view'].slug_url_kwarg, 'slug')
 
     def test_expansionset_detail_view_set_name_on_detail_page(self):
-        expansion = ExpansionSet.objects.get(id=4)
-        response = self.client.get(reverse('db:set_detail', args=[expansion.slug]))
+        response = self.client.get(reverse('db:set_detail', args=[self.expansion.slug]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, expansion.name)
+        self.assertContains(response, self.expansion.name)
         self.assertEqual(response.context['expansionset'].name, 'Limited Edition 4')
 
     def test_expansionset_detail_view_set_release_date_on_detail_page(self):
-        expansion = ExpansionSet.objects.get(id=4)
-        response = self.client.get(reverse('db:set_detail', args=[expansion.slug]))
+        response = self.client.get(reverse('db:set_detail', args=[self.expansion.slug]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, expansion.release_date)
+        self.assertContains(response, self.expansion.release_date)
         self.assertEqual(response.context['expansionset'].release_date, '1993-04-05')
 
     def test_expansionset_override_get_context_data(self):
@@ -257,8 +244,7 @@ class ExpansionSetDetailViewTest(TestCase):
             sdk_id='234',
             set = 'LE4'
         )
-        expansion = ExpansionSet.objects.get(id=4)
-        response = self.client.get(reverse('db:set_detail', args=[expansion.slug]))
+        response = self.client.get(reverse('db:set_detail', args=[self.expansion.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['set_cards'])
         self.assertEqual(len(response.context['set_cards']), 2)
