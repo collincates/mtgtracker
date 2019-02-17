@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand
 from mtgsdk import Card as SDKCard
 from mtgsdk import Set
 from db.models import Card as Card
-from db.models import ExpansionSet
+from db.models import ExpansionSet, ExpansionSetCard
 
 
 # def progress(count, total, status=''):
@@ -50,6 +50,8 @@ class Command(BaseCommand):
         self._change_card_id_release_date_field_names()
         self._update_or_create_card_model_objects()
         self._validate_card_update()
+        self._update_or_create_m2m_expansionsetcard_objects()
+        self._validate_expansionsetcard_objects()
 
     def _get_all_sets(self):
         """
@@ -218,4 +220,45 @@ class Command(BaseCommand):
             #Also return name, set_name, sdk_id of missing cards.
         else:
             self.stdout.write(self.style.SUCCESS(f'Update successful. There are now {cards_all} unique cards in the database.'))
+            print(f'There are errors with the following cards: {self.errors}')
+
+    def _update_or_create_m2m_expansionsetcard_objects(self):
+        """
+        Update or create ExpansionSetCard object using Card and ExpansionSet
+        in a many-to-many relationship.
+        """
+        all_cards = sorted(
+            list(Card.objects.all()),
+            key=lambda x: (x.release_date, x.set, x.name)
+        )
+        for card in all_cards:
+            # All cards have a correct 'set' except for Nalathni Dragon. Manual exception.
+            try:
+                this_cards_set_id = [set.id for set in ExpansionSet.objects.all() if set.code == card.set][0]
+            # If card if Nalathni Dragon
+            except IndexError:
+                this_cards_set_id = 7
+            this_expansionset_card, created = ExpansionSetCard.objects.update_or_create(
+                card_id=card.id,
+                expansionset_id=this_cards_set_id
+            )
+            if created:
+                self.stdout.write(f'CREATED\t{this_expansionset_card.id}\t{this_expansionset_card.card_id}\t{this_expansionset_card.expansionset_id}\t{card.set}\t{card.name}')
+            else:
+                self.stdout.write(f'UPDATED\t{this_expansionset_card.id}\t{card.set}\t{card.name}')
+
+    def _validate_expansionsetcard_objects(self):
+        """
+        Confirm that total cards existing in the ExpansionSetCard table
+        matches the total cards existing in the Card table.
+        """
+        expansionsetcards_all = len(ExpansionSetCard.objects.all())
+        cards_all = len(Card.objects.all())
+        if expansionsetcards_all != cards_all:
+            self.stdout.write(self.style.ERROR('***There was a problem.***'))
+            self.stdout.write(self.style.ERROR(f'{expansionsetcards_all - cards_all} cards were not inserted into the database.'))
+            print(f'There are errors with the following cards: {self.errors}')
+            #Also return name, set_name, sdk_id of missing cards.
+        else:
+            self.stdout.write(self.style.SUCCESS(f'Update successful. There are now {cards_all} ExpansionSetCards in the database.'))
             print(f'There are errors with the following cards: {self.errors}')
