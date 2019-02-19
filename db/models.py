@@ -75,13 +75,13 @@ class Card(models.Model):
         return Card.objects.filter(
             name=self.name,
             set__in=self.printings
-            )
+            ).order_by('id')
 
     def other_printings(self):
         return Card.objects.filter(
             name=self.name,
             set__in=self.printings
-            ).exclude(id=self.id)
+            ).order_by('id').exclude(id=self.id)
 
 
 class ExpansionSet(models.Model):

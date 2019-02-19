@@ -22,10 +22,10 @@ class CardListView(generic.ListView):
     model = Card
     paginate_by = 100
     template_name = 'db/card_list.html'
-    ordering = ['name']
+    ordering = ['name', '-release_date']
 
     def get_queryset(self):
-        result=super(CardListView, self).get_queryset()
+        result = super(CardListView, self).get_queryset()
 
         query = self.request.GET.get('query')
         if query:
@@ -34,7 +34,10 @@ class CardListView(generic.ListView):
                 reduce(operator.and_,
                     (Q(name__icontains=q) for q in query_list))
             )
-        return result
+        # this takes a long time to load!
+        only_latest_printings = result.order_by('name', '-release_date').distinct('name')
+
+        return only_latest_printings
 
 
 class CardDetailView(generic.DetailView):
