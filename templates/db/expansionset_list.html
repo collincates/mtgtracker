@@ -4,10 +4,10 @@
 
 {% block content %}
 <table>
-  {% if card_list %}
-    {% for card in card_list %}
+  {% if expansionset_list %}
+    {% for set in expansionset_list %}
       <tr>
-        <p><a href="{% url 'db:card_detail' card_slug=card.slug %}">{{ card.name }}</a> {{ card.set_name }}</p>
+        <p><a href="{% url 'db:set_detail' set_slug=set.slug %}">{{ set.name }}</a></p>
       </tr>
     {% endfor %}
   {% else %}

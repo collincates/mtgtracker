@@ -14,7 +14,7 @@
       <td>
         {% if card.name %}<p><strong>Card Name:</strong>{{ card.name }}</p>{% endif %}
         {% if card.mana_cost %}<p><strong>Mana Cost:</strong> {{ card.mana_cost }}</p>{% endif %}
-        {% if card.cmc %}<p><strong>Converted Mana Cost:</strong>  {{ card.cmc }}</p>{% endif %}
+        {% if card.cmc %}<p><strong>Converted Mana Cost:</strong>  {{ card.cmc|floatformat }}</p>{% endif %}
         {% if card.type %}<p><strong>Types:</strong> {{ card.type }}</p>{% endif %}
         {% if card.text %}<p><strong>Card Text:</strong> {{ card.text }}</p>{% endif %}
         {% if card.flavor %}<p><strong>Flavor Text:</strong> {{ card.flavor }}</p>{% endif %}

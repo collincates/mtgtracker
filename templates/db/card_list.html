@@ -9,6 +9,7 @@
   </button>
   <input class="searchfield" id="searchbox" name="query" type="text" placeholder="Search for a card">
 </form>
+<p>Number of results: {{ card_list|length }}</p>
 
 <table class="cardItemTable table-striped table-hover">
   {% for card in card_list %}

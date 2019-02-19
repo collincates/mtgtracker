@@ -64,10 +64,7 @@ class ExpansionSetListView(generic.ListView):
     model = ExpansionSet
     paginate_by = 100
     template_name = 'db/expansionset_list.html'
-    ordering = ['name']
-
-    def get_queryset(self):
-        return ExpansionSet.objects.all()
+    ordering = ['id']
 
 
 class ExpansionSetDetailView(generic.DetailView):
