@@ -8,7 +8,7 @@ logging.basicConfig(
 import operator
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.text import slugify
 from django.views import generic
@@ -36,6 +36,7 @@ class CardListView(generic.ListView):
             )
         # this takes a long time to load!
         only_latest_printings = result.order_by('name', '-release_date').distinct('name')
+        # if len(only_latest_printings) == 1:
 
         return only_latest_printings
 

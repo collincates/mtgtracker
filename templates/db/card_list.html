@@ -32,7 +32,9 @@
       <td class='rightcolumn'>
         <div>
           <div class="carditemset">
-            <a href="">{{ card.set }}</a>
+            <a href="{% url 'db:card_detail' card_slug=card.slug %}">
+              {{ card.set }}
+            </a>
           </div>
           {% if card.other_printings %}
           <div>
