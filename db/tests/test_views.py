@@ -1,3 +1,4 @@
+from collections import Counter
 import datetime
 from django.test import TestCase
 from django.urls import reverse
@@ -248,3 +249,72 @@ class ExpansionSetDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['set_cards'])
         self.assertEqual(len(response.context['set_cards']), 2)
+
+    def test_expansionset_override_get_context_data_cards_by_color(self):
+        self.assertTrue(False)
+
+class ExpansionsetChartDataTest(TestCase):
+
+    def setUp(self):
+        self.card1 = Card.objects.create(
+            name='Card 1',
+            set_name='Limited Edition 4',
+            id=1,
+            sdk_id='123',
+            release_date='1993-04-05',
+            color_identity=[]
+        )
+        self.card2 = Card.objects.create(
+            name='Card 2',
+            set_name='Limited Edition 4',
+            id=2,
+            sdk_id='456',
+            release_date='1993-04-05',
+            color_identity=['W']
+        )
+        self.card3 = Card.objects.create(
+            name='Card 3',
+            set_name='Limited Edition 4',
+            id=4,
+            sdk_id='789',
+            release_date='1993-04-05',
+            color_identity=['U', 'B']
+        )
+        self.expansion = ExpansionSet.objects.create(
+            id=4,
+            code='LE4',
+            name='Limited Edition 4',
+            release_date='1993-04-05'
+        )
+
+    def test_expansionset_chart_data_series_date_parses_correctly(self):
+        cards_by_color = Counter()
+        # Does this actually test the m2m lookup?
+        set_cards = Card.objects.filter(set_name=self.expansion.name)
+        for card in set_cards:
+            if len(card.color_identity) == 0:
+                cards_by_color['colorless'] += 1
+            elif len(card.color_identity) == 1:
+                cards_by_color[card.color_identity[0]] += 1
+            elif len(card.color_identity) > 1:
+                cards_by_color['multicolor'] += 1
+            else:
+                # Is there an else?
+                pass
+        chart = {
+            'chart': {'type': 'column'},
+            'title': {'text': 'Card Count by Color Identity'},
+            'series': [{
+                'name': 'Color Identities',
+                'data': [{'name': k, 'y': v} for k, v in cards_by_color.items()]
+            }]
+        }
+
+        self.assertEqual(
+            chart['series'][0]['data'],
+            [
+                {'name': 'colorless', 'y': 1},
+                {'name': 'W', 'y': 1},
+                {'name': 'multicolor', 'y': 1}
+            ]
+        )

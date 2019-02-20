@@ -46,3 +46,6 @@ class dbUrlsTest(TestCase):
         self.assertTrue(
             'set_slug' in response.context['view'].__dict__['kwargs']
         )
+
+    def test_expansionset_chart_data(self):
+        self.assertTrue(False)
