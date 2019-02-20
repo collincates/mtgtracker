@@ -1,3 +1,4 @@
+from collections import Counter
 import logging
 
 logging.basicConfig(
@@ -83,4 +84,32 @@ class ExpansionSetDetailView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['set_cards'] = Card.objects.filter(set=self.object.code)
+        context['cards_by_color'] = self.get_card_count_by_color()
         return context
+
+    def get_card_count_by_color(self):
+        """
+        Return a dictionary of card count by card color for a set.
+        Colors are stored as dictionary keys and their counts
+        are stored as dictionary values.
+        """
+        cards_by_color = Counter()
+        set_cards = Card.objects.filter(set=self.object.code)
+        for card in set_cards:
+            # Card is colorless
+            if len(card.color_identity) == 0:
+                # Card is a land
+                # Card is an artifact
+                # Card is a ??
+                cards_by_color['colorless'] += 1
+            elif len(card.color_identity) == 1:
+                # Card is a single color
+                cards_by_color[card.color_identity[0]] += 1
+            elif len(card.color_identity) > 1:
+                # Card is multicolor
+                cards_by_color['multicolor'] += 1
+            else:
+                # Is there an else?
+                pass
+
+        return [{k:v} for k, v in cards_by_color.items()]

@@ -229,7 +229,7 @@ class ExpansionSetDetailViewTest(TestCase):
         self.assertContains(response, self.expansion.release_date)
         self.assertEqual(response.context['expansionset'].release_date, '1993-04-05')
 
-    def test_expansionset_override_get_context_data(self):
+    def test_expansionset_override_get_context_data_set_cards(self):
         card1 = Card.objects.create(
             name='Card 1',
             set_name='Limited Edition 4',
