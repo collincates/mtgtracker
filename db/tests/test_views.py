@@ -233,9 +233,8 @@ class ExpansionSetDetailViewTest(TestCase):
 
     def test_expansionset_detail_view_set_release_date_on_detail_page(self):
         response = self.client.get(reverse('db:set_detail', args=[self.expansion.slug]))
-        # print(response.context['expansionset'])
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response.context['expansionset'], self.expansion.release_date)
+        self.assertTrue('expansionset' in response.context)
         self.assertEqual(response.context['expansionset'].release_date, datetime.date(1993, 4, 5))
 
     def test_expansionset_override_get_context_data_set_cards(self):

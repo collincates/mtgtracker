@@ -138,7 +138,11 @@ class ExpansionSetModelTest(TestCase):
 
     def test_expansionset_override_save_with_slug(self):
         # ExpansionSet class comes with a blank slug upon instantiation.
-        expansionset = ExpansionSet(name='Test Expansion Set', id=4)
+        expansionset = ExpansionSet(
+            name='Test Expansion Set',
+            id=4,
+            release_date='1993-01-01'
+        )
         # Assert SlugField contains default blank value.
         self.assertEqual(expansionset.slug, '')
         # .save() is overriden to call slugify(f'{expansionset.name}')
