@@ -62,8 +62,52 @@ class CardListViewTest(TestCase):
         sorted_cards = Card.objects.all().order_by('name')
         self.assertEqual(response.context['object_list'][79], sorted_cards[79])
 
-    def test_card_list_get_queryset(self):
-        pass
+    def test_card_list_get_queryset_filters_only_latest_printings(self):
+        card1_bested = Card.objects.create(
+            name=f'Bested Behemoth',
+            set='ATS',
+            set_name='a test set',
+            id=204,
+            sdk_id='test sdk_id 1',
+            release_date='1995-04-05',
+            printings=['ATS', 'ATS2']
+        )
+
+        card2_bested = Card.objects.create(
+            name=f'Bested Behemoth',
+            set='ATS2',
+            set_name='a test set 2',
+            id=205,
+            sdk_id='test sdk_id 2',
+            release_date='1995-08-05',
+            printings=['ATS', 'ATS2']
+        )
+        card3_abhorrent = Card.objects.create(
+            name=f'Abhorrent Behemoth',
+            set='ATS',
+            set_name='a test set',
+            id=206,
+            sdk_id='test sdk_id 3',
+            release_date='1995-04-05',
+            printings=['ATS']
+        )
+
+        response = self.client.get(f"{reverse('db:card_list')}?query=behemoth")
+        # Queryset should contain card2_bested and card3_abhorrent which are
+        # both the most recent printings of cards with 'behemoth' in the title.
+        response_queryset = response.context['object_list']
+        orm_queryset = Card.objects.filter(id__in=[205, 206]).order_by('name', '-release_date')
+        self.assertQuerysetEqual(
+            response_queryset,
+            orm_queryset,
+            transform=lambda x:x
+        )
+
+        # Queryset objects should be ordered by 'name', '-release_date'
+        self.assertEqual(
+            [(card.name, card.release_date) for card in response_queryset],
+            [(card.name, card.release_date) for card in orm_queryset]
+        )
 
 
 class CardDetailViewTest(TestCase):
@@ -235,7 +279,10 @@ class ExpansionSetDetailViewTest(TestCase):
         response = self.client.get(reverse('db:set_detail', args=[self.expansion.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertTrue('expansionset' in response.context)
-        self.assertEqual(response.context['expansionset'].release_date, datetime.date(1993, 4, 5))
+        self.assertEqual(
+            response.context['expansionset'].release_date,
+            datetime.date(1993, 4, 5)
+        )
 
     def test_expansionset_override_get_context_data_set_cards(self):
         card1 = Card.objects.create(

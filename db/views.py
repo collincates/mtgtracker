@@ -22,7 +22,7 @@ class CardListView(generic.ListView):
     model = Card
     paginate_by = 100
     template_name = 'db/card_list.html'
-    ordering = ['name', '-release_date']
+    # ordering = ['name', '-release_date']
 
     def get_queryset(self):
         result = super(CardListView, self).get_queryset()

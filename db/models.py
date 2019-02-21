@@ -20,7 +20,7 @@ class Card(models.Model):
     loyalty = models.CharField(max_length=10, null=True)
     mana_cost = models.CharField(max_length=100, null=True)
     multiverse_id = models.PositiveIntegerField(null=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, db_index=True)
     names = ArrayField(models.CharField(max_length=255, null=True), null=True)
     number = models.CharField(max_length=10, null=True)
     original_text = models.TextField(max_length=1000, null=True)
@@ -47,7 +47,7 @@ class Card(models.Model):
     watermark = models.CharField(max_length=50, null=True)
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('name', 'release_date')
         verbose_name = 'card'
         verbose_name_plural = 'cards'
 
