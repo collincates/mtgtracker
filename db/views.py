@@ -1,4 +1,5 @@
 from collections import Counter
+from functools import reduce
 import logging
 
 logging.basicConfig(
@@ -14,9 +15,6 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.text import slugify
 from django.views import generic
-
-from functools import reduce
-# from itertools import filter
 
 from db.models import Card, ExpansionSet
 

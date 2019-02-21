@@ -19,6 +19,7 @@ class CardListViewTest(TestCase):
                 name=f'Card {card_id}',
                 id=f'{card_id}',
                 sdk_id=f'{card_id}',
+                printings=[card_id]
             )
 
     def test_card_list_view_url_exists_at_desired_location(self):
@@ -70,11 +71,17 @@ class CardDetailViewTest(TestCase):
     def setUp(self):
         self.card = Card.objects.create(
             name=f'Test Card',
+            set='ATS',
             set_name='a test set',
             id=1,
             sdk_id='test sdk_id',
         )
-
+        self.expansion = ExpansionSet.objects.create(
+            id=2,
+            code='ATS',
+            name='a test set',
+            release_date='1993-04-05'
+        )
     def test_card_detail_view_url_exists_at_desired_location(self):
         response = self.client.get(self.card.get_absolute_url())
         self.assertEqual(response.status_code, 200)
@@ -113,7 +120,7 @@ class CardDetailViewTest(TestCase):
     def test_card_detail_view_card_set_slug_in_context(self):
         response = self.client.get(reverse('db:card_detail', args=[self.card.slug]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response.context, set_slug)
+        self.assertContains(response, self.card.slug)
         self.assertEqual(response.context['set_slug'], 'a-test-set')
 
 
@@ -226,9 +233,10 @@ class ExpansionSetDetailViewTest(TestCase):
 
     def test_expansionset_detail_view_set_release_date_on_detail_page(self):
         response = self.client.get(reverse('db:set_detail', args=[self.expansion.slug]))
+        # print(response.context['expansionset'])
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.expansion.release_date)
-        self.assertEqual(response.context['expansionset'].release_date, '1993-04-05')
+        self.assertContains(response.context['expansionset'], self.expansion.release_date)
+        self.assertEqual(response.context['expansionset'].release_date, datetime.date(1993, 4, 5))
 
     def test_expansionset_override_get_context_data_set_cards(self):
         card1 = Card.objects.create(
