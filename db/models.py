@@ -1,6 +1,7 @@
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.text import slugify
 
 
@@ -65,18 +66,21 @@ class Card(models.Model):
     def get_absolute_url(self):
         return reverse('db:card_detail', kwargs={'card_slug': self.slug})
 
+    @cached_property
     def art_variations(self):
         if self.variations:
             return Card.objects.filter(
                 sdk_id__in=[self.sdk_id, *self.variations]
                 ).values_list('slug', flat=True).order_by('id')
 
+    @cached_property
     def all_printings(self):
         return Card.objects.filter(
             name=self.name,
             set__in=self.printings
             ).order_by('id')
 
+    @cached_property
     def other_printings(self):
         return Card.objects.filter(
             name=self.name,

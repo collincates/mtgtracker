@@ -78,21 +78,21 @@ class CardModelTest(TestCase):
         self.assertEqual(card_abs_url, '/db/card/1-card-1')
 
     def test_card_art_variations(self):
-        art_var = self.card3.art_variations()
+        art_var = self.card3.art_variations
         self.assertQuerysetEqual(
             art_var,
             map(repr, ['1-card-1', '2-card-2', '3-card-3'])
         )
 
     def test_card_all_printings(self):
-        all_sets = self.card3.all_printings()
+        all_sets = self.card3.all_printings
         self.assertQuerysetEqual(
             all_sets,
             ['<Card: Card 3>', '<Card: Card 3>', '<Card: Card 3>']
         )
 
     def test_card_other_printings(self):
-        all_sets = self.card3.other_printings()
+        all_sets = self.card3.other_printings
         self.assertQuerysetEqual(
             all_sets,
             ['<Card: Card 3>', '<Card: Card 3>']
