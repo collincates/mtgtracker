@@ -11,12 +11,13 @@ import operator
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.text import slugify
 from django.views import generic
 
 from db.models import Card, ExpansionSet
+
 
 class CardListView(generic.ListView):
     model = Card
@@ -34,11 +35,27 @@ class CardListView(generic.ListView):
                 reduce(operator.and_,
                     (Q(name__icontains=q) for q in query_list))
             )
-        # this takes a long time to load!
+        # This takes a long time to load!
         only_latest_printings = result.order_by('name', '-release_date').distinct('name')
-        # if len(only_latest_printings) == 1:
 
         return only_latest_printings
+
+    def render_to_response(self, context):
+        """
+        If a single card is returned in a search query via get_queryset(),
+        redirect user to card_detail page for the returned card.
+        """
+
+        if self.object_list.count() == 1:
+            return redirect(reverse(
+                'db:card_detail',
+                kwargs={
+                    'card_slug': self.object_list.first().slug
+                }
+            ))
+        return super(CardListView, self).render_to_response(context)
+
+
 
 
 class CardDetailView(generic.DetailView):

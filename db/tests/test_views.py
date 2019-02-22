@@ -62,7 +62,7 @@ class CardListViewTest(TestCase):
         sorted_cards = Card.objects.all().order_by('name')
         self.assertEqual(response.context['object_list'][79], sorted_cards[79])
 
-    def test_card_list_get_queryset_filters_only_latest_printings(self):
+    def test_card_list_view_get_queryset_filters_only_latest_printings(self):
         card1_bested = Card.objects.create(
             name=f'Bested Behemoth',
             set='ATS',
@@ -108,6 +108,60 @@ class CardListViewTest(TestCase):
             [(card.name, card.release_date) for card in response_queryset],
             [(card.name, card.release_date) for card in orm_queryset]
         )
+
+    def test_card_list_view_render_to_response_calls_super_without_query_search_being_used(self):
+        response = self.client.get(f"{reverse('db:card_list')}")
+        response_queryset = response.context['object_list']
+        # Assert that query returned more than zero objects
+        self.assertTrue(response_queryset)
+        # Assert that 100 cards are returned due to pagination == 100
+        self.assertEqual(len(response_queryset), 100)
+
+    def test_card_list_view_render_to_response_calls_super_with_empty_query(self):
+        response = self.client.get(f"{reverse('db:card_list')}?query=")
+        response_queryset = response.context['object_list']
+        # Assert that query returned more than zero objects
+        self.assertTrue(response_queryset)
+        # Assert that 100 cards are returned due to pagination == 100
+        self.assertEqual(len(response_queryset), 100)
+
+    def test_card_list_view_render_to_response_calls_super_with_query_returning_zero_results(self):
+        response = self.client.get(f"{reverse('db:card_list')}?query=zzyzx")
+        response_queryset = response.context['object_list']
+        # Assert that no cards are returned
+        self.assertFalse(response_queryset)
+
+    def test_card_list_view_render_to_response_redirects_to_card_detail_page_with_single_query_result(self):
+        card_silver_dragon = Card.objects.create(
+            name=f'Silver Dragon',
+            set='ATS',
+            set_name='a test set',
+            id=207,
+            sdk_id='test sdk_id 4',
+            release_date='1995-04-05',
+            printings=['ATS']
+        )
+
+        expansion = ExpansionSet.objects.create(
+            id=208,
+            code='ATS',
+            name='a test set',
+            release_date='1995-04-05'
+        )
+
+        response = self.client.get(f"{reverse('db:card_list')}?query=silver dragon")
+        # Assert that dispath() redirects before get_queryset() is called
+        self.assertIsNone(response.context)
+        # Assert redirect to card_detail page for 'Silver Dragon'
+        self.assertRedirects(response, '/db/card/207-silver-dragon')
+
+    def test_card_list_view_render_to_response_calls_super_with_query_returning_multiple_results(self):
+        response = self.client.get(f"{reverse('db:card_list')}?query=card")
+        response_queryset = response.context['object_list']
+        # Assert that query returned more than zero objects
+        self.assertTrue(response_queryset)
+        # Assert that 100 cards are returned due to pagination == 100
+        self.assertEqual(len(response_queryset), 100)
 
 
 class CardDetailViewTest(TestCase):
