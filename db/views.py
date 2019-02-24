@@ -9,6 +9,7 @@ logging.basicConfig(
 
 import operator
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -19,43 +20,92 @@ from django.views import generic
 from db.models import Card, ExpansionSet
 
 
-class CardListView(generic.ListView):
-    model = Card
-    paginate_by = 100
-    template_name = 'db/card_list.html'
-    # ordering = ['name', '-release_date']
+# class CardListView(generic.ListView):
+#     model = Card
+#     paginate_by = 100
+#     template_name = 'db/card_list.html'
+#     # context_object_name = 'all_cards'
+#     # ordering = ['name', '-release_date']
+#
+#     def get_queryset(self, *args, **kwargs):
+#         result = super(CardListView, self).get_queryset()
+#
+#         query = self.request.GET.get('query')
+#         if query:
+#             query_list = query.split()
+#             result = result.filter(
+#                 reduce(operator.and_,
+#                     (Q(name__icontains=q) for q in query_list))
+#             )
+#         # Returns only latest printings of each card
+#         # This takes a long time to load!
+#         queryset = result.order_by('name', '-release_date').distinct('name')
+#
+#         return queryset
+#
+#     def render_to_response(self, context, **response_kwargs):
+#         """
+#         If a single card is returned in a search query via get_queryset(),
+#         redirect user to card_detail page for the returned card.
+#         """
+#
+#         if self.object_list.count() == 1:
+#             return redirect(reverse(
+#                 'db:card_detail',
+#                 kwargs={
+#                     'card_slug': self.object_list.first().slug
+#                 }
+#             ))
+#         return super(CardListView, self).render_to_response(context, **response_kwargs)
 
-    def get_queryset(self):
-        result = super(CardListView, self).get_queryset()
 
-        query = self.request.GET.get('query')
-        if query:
-            query_list = query.split()
-            result = result.filter(
-                reduce(operator.and_,
-                    (Q(name__icontains=q) for q in query_list))
-            )
-        # This takes a long time to load!
-        only_latest_printings = result.order_by('name', '-release_date').distinct('name')
+def card_list(request):
+    all_cards = Card.objects.all()
+    query = request.GET.get('query')
+    if query:
+        query_list = query.split()
+        all_cards = all_cards.filter(
+            reduce(operator.and_,
+                (Q(name__icontains=q) for q in query_list))
+        )
+    # Returns only latest printings of each card
+    # This takes a long time to load!
+    all_cards = all_cards.order_by('name', '-release_date').distinct('name')
 
-        return only_latest_printings
+    if all_cards.count() == 1:
+        return redirect(reverse(
+            'db:card_detail',
+            kwargs={
+                'card_slug': all_cards.first().slug
+            }
+        ))
 
-    def render_to_response(self, context):
-        """
-        If a single card is returned in a search query via get_queryset(),
-        redirect user to card_detail page for the returned card.
-        """
+    paginator = Paginator(all_cards, 100)
+    page = request.GET.get('page')
+    all_cards = paginator.get_page(page)
 
-        if self.object_list.count() == 1:
-            return redirect(reverse(
-                'db:card_detail',
-                kwargs={
-                    'card_slug': self.object_list.first().slug
-                }
-            ))
-        return super(CardListView, self).render_to_response(context)
+    visible_page_links = [
+    1,
+    2,
+    '...',
+    int(page) - 3,
+    int(page) - 2,
+    int(page) - 1,
+    int(page),
+    int(page) + 1,
+    int(page) + 2,
+    int(page) + 3,
+    '...',
+    paginator.num_pages - 1,
+    paginator.num_pages,
+    ]
 
+    context = {
+        'all_cards': all_cards,
+        'visible_page_links': visible_page_links
+    }
 
+    return render(request, 'db/card_list.html', context)
 
 
 class CardDetailView(generic.DetailView):

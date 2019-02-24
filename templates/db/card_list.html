@@ -2,17 +2,47 @@
 
 {% block title %}<title>Card Database</title>{% endblock title %}
 
+{% block pagination %}
+  {% if all_cards.has_other_pages %}
+    <div class="pagination">
+      <span class="page-links">
+        {% if all_cards.has_previous %}
+          <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page=1">&Lt;</a>
+          <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.previous_page_number }}">&lsaquo;</a>
+        {% else %}
+          <a class="disabled"><span>&Lt;</span></a>
+          <a class="disabled"><span>&lsaquo;</span></a>
+        {% endif %}
+        {% for i in visible_page_links %}
+          {% if all_cards.number == i %}
+            <span class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></span>
+          {% else %}
+            <span><a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ i }}">{{ i }}</a></span>
+          {% endif %}
+        {% endfor %}
+        {% if all_cards.has_next %}
+          <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.next_page_number }}">&rsaquo;</a>
+          <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.paginator.num_pages }}">&Gt;</a>
+        {% else %}
+          <a class="disabled"><span>&rsaquo;</span></a>
+          <a class="disabled"><span>&Gt;</span></a>
+        {% endif %}
+      </span>
+    </div>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
-<form id="searchform" action="{% url 'db:card_list' %}" method="GET" accept-charset="utf-8">
+<form id="searchform" action="" method="GET" accept-charset="utf-8">
   <button class="searchbutton" type="submit">
     <i class="fa fa-search" aria-hidden="true">GO</i>
   </button>
-  <input class="searchfield" id="searchbox" name="query" type="text" placeholder="Search for a card">
+  <input class="searchfield" id="searchbox" name="query" type="text" value="{{ request.GET.q }}" placeholder="Search for a card">
 </form>
-<p>Number of results: {{ card_list|length }}</p>
+<p>Number of results: {{ all_cards|length }}</p>
 
 <table class="cardItemTable table-striped table-hover">
-  {% for card in card_list %}
+  {% for card in all_cards %}
     <tr class="cardItem">
       <td class="addremovecolumn">
         <a href="{% url 'collection:collection_add' card.id %}" class="btn btn-warning">Add</a>
