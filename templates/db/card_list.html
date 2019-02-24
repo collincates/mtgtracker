@@ -7,11 +7,11 @@
     <div class="pagination">
       <span class="page-links">
         {% if all_cards.has_previous %}
-          <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page=1">&Lt;</a>
-          <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.previous_page_number }}">&lsaquo;</a>
-        {% else %}
-          <a class="disabled"><span>&Lt;</span></a>
-          <a class="disabled"><span>&lsaquo;</span></a>
+          {% if all_cards.number < 5 %}
+          {% else %}
+            <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page=1">&Lt;</a>
+            <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.previous_page_number }}">&lsaquo;</a>
+          {% endif %}
         {% endif %}
         {% for i in visible_page_links %}
           {% if all_cards.number == i %}
@@ -21,11 +21,11 @@
           {% endif %}
         {% endfor %}
         {% if all_cards.has_next %}
-          <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.next_page_number }}">&rsaquo;</a>
-          <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.paginator.num_pages }}">&Gt;</a>
-        {% else %}
-          <a class="disabled"><span>&rsaquo;</span></a>
-          <a class="disabled"><span>&Gt;</span></a>
+          {% if all_cards.number > all_cards.paginator.num_pages|add:"-4" %}
+          {% else %}
+            <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.next_page_number }}">&rsaquo;</a>
+            <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.paginator.num_pages }}">&Gt;</a>
+          {% endif %}
         {% endif %}
       </span>
     </div>
@@ -37,7 +37,7 @@
   <button class="searchbutton" type="submit">
     <i class="fa fa-search" aria-hidden="true">GO</i>
   </button>
-  <input class="searchfield" id="searchbox" name="query" type="text" value="{{ request.GET.q }}" placeholder="Search for a card">
+  <input class="searchfield" id="searchbox" name="query" type="text" placeholder="Search for a card">
 </form>
 <p>Number of results: {{ all_cards|length }}</p>
 

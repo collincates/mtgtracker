@@ -43,23 +43,21 @@ def card_list(request):
 
     paginator = Paginator(all_cards, 100)
     page = request.GET.get('page')
+    if not page:
+        page = 1
     all_cards = paginator.get_page(page)
 
-    visible_page_links = [
-    1,
-    2,
-    '...',
-    int(page) - 3,
-    int(page) - 2,
-    int(page) - 1,
-    int(page),
-    int(page) + 1,
-    int(page) + 2,
-    int(page) + 3,
-    '...',
-    paginator.num_pages - 1,
-    paginator.num_pages,
-    ]
+    if all_cards.paginator.num_pages > 7:
+        if int(page) < 5:
+            visible_page_links = [i for i in range(1, 8)]
+        elif int(page) > all_cards.paginator.num_pages - 3:
+            visible_page_links = [i for i in range((all_cards.paginator.num_pages - 6), all_cards.paginator.num_pages + 1)]
+        else:
+            visible_page_links = [i for i in range((int(page) - 3), (int(page) + 4))]
+    elif all_cards.paginator.num_pages > 1:
+        visible_page_links = [i for i in range(1, all_cards.paginator.num_pages + 1)]
+    else:
+        visible_page_links = None
 
     context = {
         'all_cards': all_cards,
