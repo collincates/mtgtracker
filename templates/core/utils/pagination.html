@@ -16,7 +16,7 @@
             {% endif %}
           {% endfor %}
           {% if page_obj.has_next %}
-            {% if page_obj.number > page_obj.paginator.num_pages|add:"-4" %}
+            {% if page_obj.number > page_obj.paginator.num_pages|add:"-5" %}
             {% else %}
               <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ page_obj.next_page_number }}">&rsaquo;</a>
               <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ page_obj.paginator.num_pages }}">&Gt;</a>

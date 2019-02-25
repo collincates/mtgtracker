@@ -3,7 +3,7 @@
 {% block title %}<title>Card Database</title>{% endblock title %}
 
 {% block pagination %}
-  {% include 'util/pagination.html' %}
+  {% include 'core/utils/pagination.html' %}
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
   </button>
   <input class="searchfield" id="searchbox" name="query" type="text" placeholder="Search for a card">
 </form>
-<p>Number of results: {{ all_cards|length }}</p>
+<p>Number of results: {{ page_obj|length }}</p>
 
 <table class="cardItemTable table-striped table-hover">
   {% for card in page_obj %}

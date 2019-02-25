@@ -9,7 +9,6 @@ logging.basicConfig(
 
 import operator
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -17,6 +16,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.views import generic
 
+from core.utils import paginator
 from db.models import Card, ExpansionSet
 
 
@@ -42,32 +42,12 @@ def card_list(request):
             }
         ))
 
-    paginator = Paginator(all_cards_latest_printings, 100)
-    page = request.GET.get('page')
-    if not page:
-        page = 1
-    page_obj = paginator.get_page(page)
-
-    if page_obj.paginator.num_pages > 7:
-        if int(page) < 5:
-            visible_page_links = [i for i in range(1, 8)]
-        elif int(page) > page_obj.paginator.num_pages - 3:
-            visible_page_links = [
-                i for i in range(
-                    (page_obj.paginator.num_pages - 6),
-                    page_obj.paginator.num_pages + 1
-                )
-            ]
-        else:
-            visible_page_links = [
-                i for i in range((int(page) - 3), (int(page) + 4))
-            ]
-    elif page_obj.paginator.num_pages > 1:
-        visible_page_links = [
-            i for i in range(1, page_obj.paginator.num_pages + 1)
-        ]
-    else:
-        visible_page_links = None
+    page_obj, visible_page_links = paginator(
+        request=request,
+        object_list=all_cards_latest_printings,
+        items_per_page=100,
+        mid_size=8
+    )
 
     context = {
         'page_obj': page_obj,
