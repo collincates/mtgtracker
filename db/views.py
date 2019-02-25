@@ -31,36 +31,46 @@ def card_list(request):
         )
     # Returns only latest printings of each card
     # This takes a long time to load!
-    all_cards = all_cards.order_by('name', '-release_date').distinct('name')
+    all_cards_latest_printings = all_cards.order_by('name', '-release_date') \
+                                          .distinct('name')
 
-    if all_cards.count() == 1:
+    if all_cards_latest_printings.count() == 1:
         return redirect(reverse(
             'db:card_detail',
             kwargs={
-                'card_slug': all_cards.first().slug
+                'card_slug': all_cards_latest_printings.first().slug
             }
         ))
 
-    paginator = Paginator(all_cards, 100)
+    paginator = Paginator(all_cards_latest_printings, 100)
     page = request.GET.get('page')
     if not page:
         page = 1
-    all_cards = paginator.get_page(page)
+    page_obj = paginator.get_page(page)
 
-    if all_cards.paginator.num_pages > 7:
+    if page_obj.paginator.num_pages > 7:
         if int(page) < 5:
             visible_page_links = [i for i in range(1, 8)]
-        elif int(page) > all_cards.paginator.num_pages - 3:
-            visible_page_links = [i for i in range((all_cards.paginator.num_pages - 6), all_cards.paginator.num_pages + 1)]
+        elif int(page) > page_obj.paginator.num_pages - 3:
+            visible_page_links = [
+                i for i in range(
+                    (page_obj.paginator.num_pages - 6),
+                    page_obj.paginator.num_pages + 1
+                )
+            ]
         else:
-            visible_page_links = [i for i in range((int(page) - 3), (int(page) + 4))]
-    elif all_cards.paginator.num_pages > 1:
-        visible_page_links = [i for i in range(1, all_cards.paginator.num_pages + 1)]
+            visible_page_links = [
+                i for i in range((int(page) - 3), (int(page) + 4))
+            ]
+    elif page_obj.paginator.num_pages > 1:
+        visible_page_links = [
+            i for i in range(1, page_obj.paginator.num_pages + 1)
+        ]
     else:
         visible_page_links = None
 
     context = {
-        'all_cards': all_cards,
+        'page_obj': page_obj,
         'visible_page_links': visible_page_links
     }
 

@@ -3,33 +3,7 @@
 {% block title %}<title>Card Database</title>{% endblock title %}
 
 {% block pagination %}
-  {% if all_cards.has_other_pages %}
-    <div class="pagination">
-      <span class="page-links">
-        {% if all_cards.has_previous %}
-          {% if all_cards.number < 5 %}
-          {% else %}
-            <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page=1">&Lt;</a>
-            <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.previous_page_number }}">&lsaquo;</a>
-          {% endif %}
-        {% endif %}
-        {% for i in visible_page_links %}
-          {% if all_cards.number == i %}
-            <span class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></span>
-          {% else %}
-            <span><a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ i }}">{{ i }}</a></span>
-          {% endif %}
-        {% endfor %}
-        {% if all_cards.has_next %}
-          {% if all_cards.number > all_cards.paginator.num_pages|add:"-4" %}
-          {% else %}
-            <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.next_page_number }}">&rsaquo;</a>
-            <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}page={{ all_cards.paginator.num_pages }}">&Gt;</a>
-          {% endif %}
-        {% endif %}
-      </span>
-    </div>
-  {% endif %}
+  {% include 'util/pagination.html' %}
 {% endblock %}
 
 {% block content %}
@@ -42,7 +16,7 @@
 <p>Number of results: {{ all_cards|length }}</p>
 
 <table class="cardItemTable table-striped table-hover">
-  {% for card in all_cards %}
+  {% for card in page_obj %}
     <tr class="cardItem">
       <td class="addremovecolumn">
         <a href="{% url 'collection:collection_add' card.id %}" class="btn btn-warning">Add</a>

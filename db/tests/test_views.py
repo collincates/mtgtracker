@@ -46,17 +46,17 @@ class CardListViewTest(TestCase):
     def test_card_list_view_pagination_is_one_hundred(self):
         response = self.client.get(reverse('db:card_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(len(response.context['all_cards']) == 100)
+        self.assertTrue(len(response.context['page_obj']) == 100)
 
     def test_card_list_view_pagination_lists_all_cards(self):
         response = self.client.get(reverse('db:card_list') + '?page=3')
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(len(response.context['all_cards']) == 3)
+        self.assertTrue(len(response.context['page_obj']) == 3)
 
     def test_card_list_view_ordered_by_name(self):
         response = self.client.get(reverse('db:card_list'))
         sorted_cards = Card.objects.all().order_by('name')
-        self.assertEqual(response.context['all_cards'][79], sorted_cards[79])
+        self.assertEqual(response.context['page_obj'][79], sorted_cards[79])
 
     def test_card_list_view_get_queryset_filters_only_latest_printings(self):
         card1_bested = Card.objects.create(
@@ -91,7 +91,7 @@ class CardListViewTest(TestCase):
         response = self.client.get(f"{reverse('db:card_list')}?query=behemoth")
         # Queryset should contain card2_bested and card3_abhorrent which are
         # both the most recent printings of cards with 'behemoth' in the title.
-        response_queryset = response.context['all_cards']
+        response_queryset = response.context['page_obj']
         orm_queryset = Card.objects.filter(id__in=[205, 206]).order_by('name', '-release_date')
         self.assertQuerysetEqual(
             response_queryset,
@@ -107,7 +107,7 @@ class CardListViewTest(TestCase):
 
     def test_card_list_view_render_to_response_calls_super_without_query_search_being_used(self):
         response = self.client.get(f"{reverse('db:card_list')}")
-        response_queryset = response.context['all_cards']
+        response_queryset = response.context['page_obj']
         # Assert that query returned more than zero objects
         self.assertTrue(response_queryset)
         # Assert that 100 cards are returned due to pagination == 100
@@ -115,7 +115,7 @@ class CardListViewTest(TestCase):
 
     def test_card_list_view_render_to_response_calls_super_with_empty_query(self):
         response = self.client.get(f"{reverse('db:card_list')}?query=")
-        response_queryset = response.context['all_cards']
+        response_queryset = response.context['page_obj']
         # Assert that query returned more than zero objects
         self.assertTrue(response_queryset)
         # Assert that 100 cards are returned due to pagination == 100
@@ -123,7 +123,7 @@ class CardListViewTest(TestCase):
 
     def test_card_list_view_render_to_response_calls_super_with_query_returning_zero_results(self):
         response = self.client.get(f"{reverse('db:card_list')}?query=zzyzx")
-        response_queryset = response.context['all_cards']
+        response_queryset = response.context['page_obj']
         # Assert that no cards are returned
         self.assertFalse(response_queryset)
 
@@ -153,7 +153,7 @@ class CardListViewTest(TestCase):
 
     def test_card_list_view_render_to_response_calls_super_with_query_returning_multiple_results(self):
         response = self.client.get(f"{reverse('db:card_list')}?query=card")
-        response_queryset = response.context['all_cards']
+        response_queryset = response.context['page_obj']
         # Assert that query returned more than zero objects
         self.assertTrue(response_queryset)
         # Assert that 100 cards are returned due to pagination == 100
