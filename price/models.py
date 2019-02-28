@@ -40,6 +40,7 @@ class Vendor(models.Model):
     code = models.CharField(max_length=5)
 
     class Meta:
+        unique_together = ('name', 'code',)
         verbose_name = 'vendor'
         verbose_name_plural = 'vendors'
 
@@ -52,6 +53,7 @@ class Condition(models.Model):
     code = models.CharField(max_length=10)
 
     class Meta:
+        unique_together = ('name', 'code',)
         verbose_name = 'condition'
         verbose_name_plural = 'conditions'
 
