@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'db.apps.DbConfig',
     'deck.apps.DeckConfig',
+    'price.apps.PriceConfig',
 ]
 
 MIDDLEWARE = [
