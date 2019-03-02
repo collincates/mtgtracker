@@ -25,37 +25,43 @@ class Price(models.Model):
     class Meta:
         indexes = [
             models.Index(
-                fields=['card', 'vendor', 'condition', 'timestamp']),
+                fields=['card', 'vendor', 'condition', 'timestamp']
+            ),
         ]
-        unique_together = ('card', 'vendor', 'condition', 'timestamp',)
+        unique_together = ('card', 'vendor', 'condition', 'timestamp')
         verbose_name = 'price'
         verbose_name_plural = 'prices'
 
     def __str__(self):
-        return self.price
+        return str(self.price)
 
 
-class Vendor(models.Model):
-    name = models.CharField(max_length=100)
-    code = models.CharField(max_length=5)
+class Condition(models.Model):
+    vendor = models.ForeignKey(
+        'Vendor',
+        on_delete=models.CASCADE,
+        related_name='conditions'
+    )
+    name = models.CharField(max_length=30)
+    code = models.CharField(max_length=10)
 
     class Meta:
-        unique_together = ('name', 'code',)
-        verbose_name = 'vendor'
-        verbose_name_plural = 'vendors'
+        unique_together = ('vendor', 'name', 'code')
+        verbose_name = 'condition'
+        verbose_name_plural = 'conditions'
 
     def __str__(self):
         return self.name
 
 
-class Condition(models.Model):
-    name = models.CharField(max_length=30)
-    code = models.CharField(max_length=10)
+class Vendor(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=5, unique=True)
 
     class Meta:
-        unique_together = ('name', 'code',)
-        verbose_name = 'condition'
-        verbose_name_plural = 'conditions'
+        unique_together = ('name', 'code')
+        verbose_name = 'vendor'
+        verbose_name_plural = 'vendors'
 
     def __str__(self):
         return self.name
