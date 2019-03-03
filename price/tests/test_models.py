@@ -106,6 +106,7 @@ class ConditionModelTest(TestCase):
         )
 
 class PriceModelTest(TestCase):
+
     def setUp(self):
         self.card1 = Card.objects.create(
             name='Card 1',
@@ -210,17 +211,20 @@ class PriceModelTest(TestCase):
         for item in out_of_stock_items:
             self.assertTrue(item.price == None)
 
-    # Test all cards for given price
-    # def test_price_get_all_cards_for_given_price(self):
+    def test_price_get_all_prices_for_given_card(self):
+        self.assertEqual(
+            repr([Price.objects.filter(card=self.card1)]),
+            repr([Card.objects.get(name='Card 1').prices.all()])
+        )
 
-    # # Test all vendors for given price
-    # def test_price_(self):
-    # # Test all conditions for given price
-    # def test_price_(self):
-    # # Test all prices for given condition
-    # def test_price_(self):
-    # # Test all prices for given vendor
-    # def test_price_(self):
-    # # Test all prices for given card
-    # def test_price_(self):
-    #
+    def test_price_get_all_prices_for_given_vendor(self):
+        self.assertEqual(
+            repr([Price.objects.filter(vendor=self.vendor2)]),
+            repr([Vendor.objects.get(name='SecondVendor').prices.all()])
+        )
+
+    def test_price_get_all_prices_for_given_condition(self):
+        self.assertEqual(
+            repr([Price.objects.filter(condition=self.condition_vendor1_SP)]),
+            repr([Condition.objects.get(name='Slightly Played').prices.all()])
+        )
