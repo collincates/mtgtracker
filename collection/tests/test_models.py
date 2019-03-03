@@ -11,17 +11,37 @@ class CollectionModelTest(TestCase):
 
     def setUp(self):
         """Create test user, log in test user, create collection for test user."""
-        self.user1 = User.objects.create_user(username='testuser1', password='12345678')
-        self.user2 = User.objects.create_user(username='testuser2', password='12345678')
+        self.user1 = User.objects.create_user(
+            username='testuser1',
+            password='12345678'
+        )
+        self.user2 = User.objects.create_user(
+            username='testuser2',
+            password='12345678'
+        )
+        self.test_collection1 = Collection.objects.create(
+            name='testcollection1',
+            owner=self.user1
+        )
+        self.test_collection2 = Collection.objects.create(
+            name='testcollection2',
+            owner=self.user2
+        )
+        self.card1 = Card.objects.create(
+            name='Card 1',
+            set_name='a test set',
+            id=1,
+            sdk_id='123'
+        )
+        self.card2 = Card.objects.create(
+            name='Card 2',
+            set_name='a test set',
+            id=2,
+            sdk_id='456'
+        )
 
-        self.test_collection1 = Collection.objects.create(name='testcollection1', owner=self.user1)
-        self.test_collection2 = Collection.objects.create(name='testcollection2', owner=self.user2)
-
-        self.card1 = Card.objects.create(name='Card 1', set_name='a test set', id=1, sdk_id='123')
-        self.card2 = Card.objects.create(name='Card 2', set_name='a test set', id=2, sdk_id='456')
-
-        self.deck1 = Deck.objects.create(name='testdeck1')#, cards=[card1, card2,])
-        self.deck2 = Deck.objects.create(name='testdeck2')#, cards=[card1, card2,])
+        self.deck1 = Deck.objects.create(name='testdeck1')
+        self.deck2 = Deck.objects.create(name='testdeck2')
 
         self.cards = [self.card1, self.card2,]
 
@@ -38,7 +58,10 @@ class CollectionModelTest(TestCase):
         self.assertEqual(results[1].name, 'testcollection2')
 
     def test_collection_string_representation(self):
-        self.assertEqual(self.test_collection1.__str__(), self.test_collection1.name)
+        self.assertEqual(
+            self.test_collection1.__str__(),
+            self.test_collection1.name
+        )
 
     def test_collection_override_save_with_slug(self):
         # Collection class comes with a blank slug upon instantiation.
@@ -58,7 +81,10 @@ class CollectionModelTest(TestCase):
 
     def test_collection_get_absolute_url(self):
         collection_abs_url = self.test_collection1.get_absolute_url()
-        self.assertEqual(collection_abs_url, '/collection/testuser1/testcollection1/')
+        self.assertEqual(
+            collection_abs_url,
+            '/collection/testuser1/testcollection1/'
+        )
 
 
 class CollectionCardModelTest(TestCase):
@@ -75,11 +101,22 @@ class CollectionCardModelTest(TestCase):
         A Collection object requires a value in the 'owner' field, so we create
         a test user for this set of tests and assign the collection to test user.
         """
-        self.testuser = User.objects.create_user(username='testuser', password='12345678')
+        self.testuser = User.objects.create_user(
+            username='testuser',
+            password='12345678'
+        )
 
-        self.collection = Collection.objects.create(name='testcollection', owner=self.testuser)
+        self.collection = Collection.objects.create(
+            name='testcollection',
+            owner=self.testuser
+        )
 
-        self.card1 = Card.objects.create(name='Card 1', set_name='a test set', id=1, sdk_id='123')
+        self.card1 = Card.objects.create(
+            name='Card 1',
+            set_name='a test set',
+            id=1,
+            sdk_id='123'
+        )
 
     def test_collectioncard_count_field_default_is_zero(self):
         collectioncard_1 = CollectionCard.objects.create(
