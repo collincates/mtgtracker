@@ -20,6 +20,9 @@ INSTALLED_APPS = [
     'db.apps.DbConfig',
     'deck.apps.DeckConfig',
     'price.apps.PriceConfig',
+
+    # Scrapy app: scraper
+    'scraper',
 ]
 
 MIDDLEWARE = [
