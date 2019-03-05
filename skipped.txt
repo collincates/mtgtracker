@@ -1,0 +1,76 @@
+Forest (Boulders Foreground)	NM-Mint
+Forest (Boulders Foreground)	Slightly Played
+Forest (Boulders Foreground)	Moderately Played
+Forest (Boulders Foreground)	Damaged
+Forest (Brown Dirt Road)	NM-Mint
+Forest (Brown Dirt Road)	Slightly Played
+Forest (Brown Dirt Road)	Moderately Played
+Forest (Brown Dirt Road)	Damaged
+Forest (Dark and Gloomy)	NM-Mint
+Forest (Dark and Gloomy)	Slightly Played
+Forest (Dark and Gloomy)	Moderately Played
+Forest (Dark and Gloomy)	Damaged
+Glasses of Urza	NM-Mint
+Glasses of Urza	Slightly Played
+Glasses of Urza	Moderately Played
+Glasses of Urza	Damaged
+Holy Strength	NM-Mint
+Holy Strength	Slightly Played
+Holy Strength	Moderately Played
+Holy Strength	Damaged
+Island (Clear Blue Daylight)	NM-Mint
+Island (Clear Blue Daylight)	Slightly Played
+Island (Clear Blue Daylight)	Moderately Played
+Island (Clear Blue Daylight)	Damaged
+Island (Golden Horizon)	NM-Mint
+Island (Golden Horizon)	Slightly Played
+Island (Golden Horizon)	Moderately Played
+Island (Golden Horizon)	Damaged
+Island (Pink & Orange Dusk)	NM-Mint
+Island (Pink & Orange Dusk)	Slightly Played
+Island (Pink & Orange Dusk)	Moderately Played
+Island (Pink & Orange Dusk)	Damaged
+Lance	NM-Mint
+Lance	Slightly Played
+Lance	Moderately Played
+Lance	Damaged
+Mountain (Dark Green Clouds/Blue Sky)	NM-Mint
+Mountain (Dark Green Clouds/Blue Sky)	Slightly Played
+Mountain (Dark Green Clouds/Blue Sky)	Moderately Played
+Mountain (Dark Green Clouds/Blue Sky)	Damaged
+Mountain (Grey Mountain / Red Sky)	NM-Mint
+Mountain (Grey Mountain / Red Sky)	Slightly Played
+Mountain (Grey Mountain / Red Sky)	Moderately Played
+Mountain (Grey Mountain / Red Sky)	Damaged
+Mountain (Light Blue Sky/Snow)	NM-Mint
+Mountain (Light Blue Sky/Snow)	Slightly Played
+Mountain (Light Blue Sky/Snow)	Moderately Played
+Mountain (Light Blue Sky/Snow)	Damaged
+Plains (Four Peaks Clear Meadow)	NM-Mint
+Plains (Four Peaks Clear Meadow)	Slightly Played
+Plains (Four Peaks Clear Meadow)	Moderately Played
+Plains (Four Peaks Clear Meadow)	Damaged
+Plains (Pink Horizon)	NM-Mint
+Plains (Pink Horizon)	Slightly Played
+Plains (Pink Horizon)	Moderately Played
+Plains (Pink Horizon)	Damaged
+Plains (Six Trees)	NM-Mint
+Plains (Six Trees)	Slightly Played
+Plains (Six Trees)	Moderately Played
+Plains (Six Trees)	Damaged
+Savannah	NM-Mint
+Savannah	Slightly Played
+Savannah	Moderately Played
+Savannah	Damaged
+Swamp (Blue and Foggy)	NM-Mint
+Swamp (Blue and Foggy)	Slightly Played
+Swamp (Blue and Foggy)	Moderately Played
+Swamp (Blue and Foggy)	Damaged
+Swamp (Brown and Foggy)	NM-Mint
+Swamp (Brown and Foggy)	Slightly Played
+Swamp (Brown and Foggy)	Moderately Played
+Swamp (Brown and Foggy)	Damaged
+Swamp (Dark Grey Foreground)	NM-Mint
+Swamp (Dark Grey Foreground)	Slightly Played
+Swamp (Dark Grey Foreground)	Moderately Played
+Swamp (Dark Grey Foreground)	Damaged

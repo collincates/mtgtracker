@@ -1,13 +1,16 @@
-# -*- coding: utf-8 -*-
+import os
+import sys
 
-# Scrapy settings for scraper project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     https://doc.scrapy.org/en/latest/topics/settings.html
-#     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
-#     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
+# DJANGO INTEGRATION
+
+sys.path.append(os.path.dirname(os.path.abspath('.')))
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'tome.settings'
+
+import django
+django.setup()
+
+# END DJANGO INTEGRATION
+
 
 BOT_NAME = 'scraper'
 
@@ -65,7 +68,7 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'scraper.pipelines.PricePipeline': 300,
+   'scraper.scraper.pipelines.PricePipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
