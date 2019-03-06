@@ -1,21 +1,7 @@
-import os
-import sys
-
-# DJANGO INTEGRATION
-
-sys.path.append(os.path.dirname(os.path.abspath('.')))
-# os.environ['DJANGO_SETTINGS_MODULE'] = 'tome.settings'
-
-import django
-django.setup()
-
-# END DJANGO INTEGRATION
-
-
 BOT_NAME = 'scraper'
 
-SPIDER_MODULES = ['scraper.spiders']
-NEWSPIDER_MODULE = 'scraper.spiders'
+SPIDER_MODULES = ['scraper.scraper.spiders']
+NEWSPIDER_MODULE = 'scraper.scraper.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

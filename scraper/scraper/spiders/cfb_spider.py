@@ -93,18 +93,12 @@ class CFBSpider(scrapy.Spider):
                     # For whatever reason -- likely regex mismatch --
                     # the card_listing was not scraped. We log it in a text file
                     # for now. IMPROVE THIS so we can retry skipped cards!
-                    with open('skipped.txt', 'a') as f:
+                    with open('skipped.log', 'a') as f:
                         f.write(str(card_listing.css('h4.name::text').get() + '\t' + condition.name))
                         f.write('\n')
 
-
-        # Go to next page while next page exists.
+        # Go to next page if next page exists.
         next_page = response.css('a.next_page::attr(href)').get()
         if next_page is not None:
             next_page = response.urljoin(next_page)
             yield scrapy.Request(next_page, callback=self.parse)
-
-
-# if __name__ == "__main__":
-#     spider = CFBSpider()
-#     spider.parse()
