@@ -54,6 +54,7 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+   # 'scraper.scraper.pipelines.LogWriterPipeline': 300,
    'scraper.scraper.pipelines.PricePipeline': 300,
 }
 
