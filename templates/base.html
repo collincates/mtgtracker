@@ -4,9 +4,9 @@
   {% block title %}<title>Tome</title>{% endblock %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   {% load static %}
-  <link rel="stylesheet" href="{% static 'base.css' %}">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
 </head>
 
 
@@ -15,7 +15,7 @@
     <div id="topbar">
       <div class="row">
         <div id="sitelogo" class="col-sm-4">
-          <a href="{% url 'core:home' %}"><h1>Tome</h1></a>
+          <a href="{% url 'core:home' %}"><h1 class="page-title">Tome</h1></a>
         </div>
         <div id="topnav" class="col-sm-6">
         {% if user.is_authenticated %}
@@ -34,7 +34,7 @@
       </div>
     </div>
     <hr>
-      <div class="col-sm-10">
+
 
         {% block pagination %}
         {% endblock %}
@@ -42,7 +42,7 @@
         {% block content %}
         {% endblock %}
 
-      </div>
+
 
   </div>
 </body>

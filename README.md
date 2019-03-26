@@ -31,6 +31,8 @@ Refer to `requirements/production.txt` for production-specific dependencies.
   unset PGDB_NAME
   unset PGDB_USER
   unset PGDB_PASS
+  unset PGBB_HOST
+  unset PGBB_PORT
   ```
 
   Lines 34-41 should now look like this:
@@ -54,6 +56,8 @@ Refer to `requirements/production.txt` for production-specific dependencies.
   export PGDB_NAME="tome"
   export PGDB_USER="replace_this_with_the_username_you_set_in_psql"
   export PGDB_PASS="replace_this_with_the_password_you_set_in_psql"
+  export PGDB_HOST="replace_this_with_the_host_you_set_in_psql"
+  export PGDB_PORT="replace_this_with_the_port_you_set_in_psql"
   ```
 
 - Close the file. Since we have altered the virtual environment's activation script, we must leave and re-enter the virtual environment for our changes to take effect.

@@ -14,8 +14,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
-
+    # Custom apps start here
     'accounts.apps.AccountsConfig',
     'collection.apps.CollectionConfig',
     'core.apps.CoreConfig',
@@ -32,9 +31,6 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    # Middleware for Debug Toolbar
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -63,20 +59,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'tome.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ['PGDB_NAME'],
         'USER': os.environ['PGDB_USER'],
         'PASSWORD': os.environ['PGDB_PASS'],
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'HOST': os.environ['PGDB_HOST'],
+        'PORT': os.environ['PGDB_PORT'],
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -125,5 +117,4 @@ LOGIN_REDIRECT_URL = 'home'
 AUTH_USER_MODEL = 'accounts.User'
 
 # Scrapy settings in order to run scrapy commands as django management commands.
-# sys.path.append(os.path.dirname(os.path.abspath('./scraper/scraper/settings.py')))
 os.environ['SCRAPY_SETTINGS_MODULE'] = 'scraper.scraper.settings'

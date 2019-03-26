@@ -8,19 +8,19 @@ import datetime
 
 class CFBSpider(scrapy.Spider):
     name= 'cfb_spider'
-    start_urls = [
-        # 'https://store.channelfireball.com/catalog/magic_singles-old_expansions-fallen_empires/60'
-        'https://store.channelfireball.com/catalog/magic_singles-old_expansions-arabian_nights/64'
-        # 'https://store.channelfireball.com/catalog/magic_singles-old_expansions-antiquities/63'
-    ]
-    # def start_requests(self):
-    #     """
-    #     Open urls.list and create a Request object for each one.
-    #     Use a context manager here to avoid hard-coding URLs.
-    #     """
-    #     with open('urls.list', 'r') as f:
-    #         for url in f.readlines():
-    #             yield scrapy.Request(url, callback=self.parse)
+
+    # start_urls = [
+    #     'https://store.channelfireball.com/catalog/magic_singles-old_expansions-fallen_empires/60'
+    # ]
+
+    def start_requests(self):
+        """
+        Open urls.list and create a Request object for each one.
+        Use a context manager here to avoid hard-coding URLs.
+        """
+        with open('urls.list', 'r') as f:
+            for url in f.readlines():
+                yield scrapy.Request(url, callback=self.parse)
 
     def parse(self, response):
         main_regex_sub_pattern = '[^0-9a-zA-Z ]'
