@@ -58,17 +58,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'tome.wsgi.application'
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['PGDB_NAME'],
-        'USER': os.environ['PGDB_USER'],
-        'PASSWORD': os.environ['PGDB_PASS'],
-        'HOST': os.environ['PGDB_HOST'],
-        'PORT': os.environ['PGDB_PORT'],
-    }
-}
+# No database connection established. See development or production settings
+DATABASES = {}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
