@@ -3,47 +3,51 @@
 <head>
   {% block title %}<title>Tome</title>{% endblock %}
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   {% load static %}
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  {% block css %}
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  {% endblock %}
 </head>
 
 
 <body>
-  <div class="container-fluid">
-    <div id="topbar">
-      <div class="row">
-        <div id="sitelogo" class="col-sm-4">
-          <a href="{% url 'core:home' %}"><h1 class="page-title">Tome</h1></a>
-        </div>
-        <div id="topnav" class="col-sm-6">
-        {% if user.is_authenticated %}
-            <p>User {{ request.user }} is logged in and authenticated.</p>
-        {% endif %}
-        </div>
-        <div id="topauth" class="col-sm-2">
-          {% if user.is_authenticated %}
-            User: {{ user.get_username }}
-            <a href="{% url 'logout' %}?next={{request.path}}">Logout</a>
+  <div id="main-container">
+    <header>
+      <a href="{% url 'core:home' %}" id="sitelogo">Tome</a>
+      <nav>
+        <a href="#" id="menu-icon"></a>
+        <ul>
+          <!-- <li><a href="{% url 'core:home' %}">Home</a></li> -->
+          <li><a href="{% url 'db:card_list' %}">Browse</a></li>
+
+          {% if not request.user.collection %}
+            <li><a href="{% url 'collection:collection_create' %}">Collection</a></li>
           {% else %}
-            <a href="{% url 'login' %}?next={{request.path}}">Login</a>
+            <li><a href="{% url 'collection:collection_detail' %}">Collection</a></li>
           {% endif %}
-        </div>
-      <hr>
-      </div>
+
+          {% if user.is_authenticated %}
+            <li>User: {{ user.get_username }}</li>
+            <li><a href="{% url 'logout' %}?next={{request.path}}">Logout</a></li>
+          {% else %}
+            <li><a href="{% url 'login' %}?next={{request.path}}">Login</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </header>
+
+
+    <div id="main">
+
+      {% block pagination %}
+      {% endblock %}
+
+      {% block content %}
+      {% endblock %}
+
     </div>
-    <hr>
-
-
-        {% block pagination %}
-        {% endblock %}
-
-        {% block content %}
-        {% endblock %}
-
-
-
   </div>
 </body>
 <footer>

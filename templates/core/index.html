@@ -3,8 +3,7 @@
 {% block content %}
 
 <div class="index">
-  <p class="testclass">HI THERE</p>
-  <p>User: {{ request.user }}</p>
+  <p>Welcome, {{ request.user }}!</p>
   <p><a href="{% url 'db:card_list' %}">Browse for cards</a></p>
   {% if not request.user.collection %}
     <a href="{% url 'collection:collection_create' %}">Start a collection here</a>

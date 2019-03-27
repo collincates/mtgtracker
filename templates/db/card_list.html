@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}<title>Card Database</title>{% endblock title %}
+{% load static %}
+
+{% block title %} <title>Card Database</title> {% endblock title %}
+
+{% block css %}
+  {{ block.super }}
+{% endblock css %}
 
 {% block pagination %}
   {% include 'core/utils/pagination.html' %}
@@ -15,26 +21,26 @@
 </form>
 <p>Number of results: {{ page_obj|length }}</p>
 
-<table class="cardItemTable table-striped table-hover">
+<table id="card-list" class="table-striped table-hover">
   {% for card in page_obj %}
-    <tr class="cardItem">
-      <td class="addremovecolumn">
-        <a href="{% url 'collection:collection_add' card.id %}" class="btn btn-warning">Add</a>
+    <tr class="card-list-item">
+      <td class="card-add-remove-column">
+        <!-- <a href="{% url 'collection:collection_add' card.id %}" class="btn btn-warning">+</a>
         <p><input class="collectioncardqty" type="number"></p>
-        <a href="{% url 'collection:collection_remove' card.id %}" class="btn btn-warning">Remove</a>
+        <a href="{% url 'collection:collection_remove' card.id %}" class="btn btn-warning">-</a> -->
       </td>
-      <td class="leftcolumn">
+      <td class="card-image-column">
         <a href="{% url 'db:card_detail' card_slug=card.slug %}">
-          <img src="{{ card.image_url }}" width="95" height="132">
+          <img src="{{ card.image_url }}">
         </a>
       </td>
-      <td class="midcolumn">
-        <p><a href="{% url 'db:card_detail' card_slug=card.slug %}">{{ card.name }}</a></p>
+      <td class="card-info-column">
+        <h2><a href="{% url 'db:card_detail' card_slug=card.slug %}" class="magic-font">{{ card.name }}</a></h2>
         <p>{{ card.set_name }}</p>
         <p>{{ card.type }} {% if card.power and card.toughness %} ({{ card.power }}/{{ card.toughness }}){% endif %}</p>
         <p>{{ card.text }}</p>
       </td>
-      <td class='rightcolumn'>
+      <td class='card-other-sets-column'>
         <div>
           <div class="carditemset">
             <a href="{% url 'db:card_detail' card_slug=card.slug %}">
