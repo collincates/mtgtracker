@@ -1,0 +1,49 @@
+.card-list {
+  width: 100%;
+  /* display: flex; */
+}
+
+.card-list-item {
+  width: 100%;
+  min-height: 150px;
+  vertical-align: top;
+  display: flex;
+  padding: 10px;
+  /* border: 1px solid black; */
+}
+
+.card-add-remove-column {
+  vertical-align: top;
+  width: 50px;
+  /* display: flex; */
+  /* border: 1px solid black; */
+}
+
+.card-image-column {
+  vertical-align: top;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 200px;
+  /* border: 1px solid black; */
+}
+
+.card-image-column img {
+  vertical-align: top;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.card-info-column {
+  vertical-align: top;
+  width: 500px;
+  display: inline-block;
+  /* border: 1px solid black; */
+}
+
+.card-other-sets-column {
+  vertical-align: top;
+  width: 100px;
+  display: flex;
+  /* border: 1px solid black; */
+}

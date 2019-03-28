@@ -16,9 +16,7 @@ body {
 
 a {
   color: lightgray;
-  outline: none;
   text-decoration: none;
-  padding: 2px 1px 0;
 }
 
 a:hover {
@@ -48,6 +46,10 @@ header {
   text-shadow: 1.5px 1.5px black;
 }
 
+header a:hover{
+  text-decoration: none;
+  color: lightgray;
+}
 #sitelogo {
   display: block;
   /* padding: 10px; */
@@ -59,9 +61,6 @@ header {
   font-family: 'magic';
 }
 
-#sitelogo:hover {
-  text-decoration: none;
-}
 
 nav {
   float: right;
@@ -87,13 +86,12 @@ nav ul {
 nav li {
   display: inline-block;
   float: left;
-  font-size: 24px;
-  padding: 30px;
+  font-size: 30px;
+  padding: 27.5px;
 }
 
 nav li:hover {
   background-color: #ac7d57; /* light brown */
-  border-radius: 8px 8px 0 0;
 }
 
 /* MEDIA QUERY */
@@ -147,71 +145,9 @@ nav li:hover {
   vertical-align: top;
 }
 
-.card-list {
-  width: 100%;
-  /* display: flex; */
-}
-
-.card-list-item {
-  width: 100%;
-  min-height: 150px;
-  vertical-align: top;
-  display: flex;
-  padding: 10px;
-  /* border: 1px solid black; */
-}
-
-.card-add-remove-column {
-  vertical-align: top;
-  width: 50px;
-  /* display: flex; */
-  /* border: 1px solid black; */
-}
-
-.card-image-column {
-  vertical-align: top;
-  padding-left: 10px;
-  padding-right: 10px;
-  width: 200px;
-  /* border: 1px solid black; */
-}
-
-.card-image-column img {
-  vertical-align: top;
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-
-.card-info-column {
-  vertical-align: top;
-  width: 500px;
-  display: inline-block;
-  /* border: 1px solid black; */
-}
-
-.card-other-sets-column {
-  vertical-align: top;
-  width: 100px;
-  display: flex;
-  /* border: 1px solid black; */
-}
 
 
-
-
-
-
-
-.cardDetailContainer {
-  width: auto;
-  height: 1000px;
-}
-
-.cardDetail {
-  display: inline-block;
-  position: relative;
-  vertical-align: top;
-  width: auto;
-  height: 500px;
+footer {
+  background-color: #694a3c; /* #885740; dark brown */
+  color: black;
 }

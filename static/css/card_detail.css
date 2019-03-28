@@ -1,0 +1,30 @@
+#card-detail-container {
+  width: 100%;
+  border: 1px solid black;
+}
+
+#card-detail-name {
+  color: lightgray;
+  text-decoration: none;
+  padding: 2px 1px 0;
+  border: 1px solid black;
+}
+
+#card-detail-image-container {
+  vertical-align: top;
+  width: 350px;
+}
+
+#card-detail-image-container img {
+  border-radius: 10px;
+  height: 100%;
+}
+
+.cardDetail {
+  display: inline-block;
+  position: relative;
+  vertical-align: top;
+  width: auto;
+  height: 500px;
+  border: 1px solid black;
+}
